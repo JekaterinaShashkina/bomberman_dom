@@ -1,0 +1,13 @@
+{
+  "name": "bomberman-dom",
+  "version": "1.0.0",
+  "description": "",
+  "main": "/js/main.js",
+  "scripts": {
+    "dev": "parcel src/index.html"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "http-server": "^14.1.1"
+  }
+}

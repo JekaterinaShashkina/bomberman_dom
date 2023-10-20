@@ -1,0 +1,65 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+/* styles/main.css */
+.tile {
+    width: 40px; /* example size */
+    height: 40px;
+    float: left;
+}
+
+.tile.wall {
+    background-color: #555;
+}
+
+.tile.block {
+    background-color: #777;
+}
+
+
+#lobby-container {
+    width: 800px;
+    height: 600px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 20px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+#nickname-section,
+#waiting-section {
+    text-align: center;
+    margin-top: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#timer,
+#player-counter {
+    font-weight: bold;
+    margin-top: 10px;
+}
