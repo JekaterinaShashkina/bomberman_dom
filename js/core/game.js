@@ -69,12 +69,12 @@ export const handlePlayerMovement = (key) => {
 
   // New position move avalaibility control
   if (board[newY][newX] !== WALL && board[newY][newX] !== BREAKABLE_WALL) {
-    if (board[newY][newX] !== BOMB) {
+    if (board[playerPosition.y][playerPosition.x] !== BOMB) {
       // renew player position
       board[playerPosition.y][playerPosition.x] = EMPTY;
-      playerPosition = { x: newX, y: newY };
-      board[newY][newX] = PLAYER;
     }
+    playerPosition = { x: newX, y: newY };
+    board[newY][newX] = PLAYER;
 
     // draw new game board
     renderBoard();
