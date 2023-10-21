@@ -5,6 +5,7 @@ import {
   BOMB,
   BREAKABLE_WALL,
   PLAYER,
+  EXPLOSION,
   board,
 } from './const.js';
 import { renderBoard } from './map.js';
@@ -22,15 +23,15 @@ export const initializeBoard = () => {
         i === boardSize - 1 ||
         j === 0 ||
         j === boardSize - 1 ||
-        // (i % 2 === 0 && j % 2 === 0) ||
-        Math.random() < 0.2
+        (i % 2 === 0 && j % 2 === 0)
+        // Math.random() < 0.2
       ) {
         row.push(WALL);
       } else if (
         i % 2 === 1 &&
         j % 2 === 1 &&
         !(i === 1 && j === 1) &&
-        Math.random() < 0.4
+        Math.random() < 0.6
       ) {
         row.push(BREAKABLE_WALL);
       } else {
@@ -91,23 +92,75 @@ const placeBomb = () => {
   //  place bomb on the current player position
   board[currentPlayerY][currentPlayerX] = BOMB;
   bombs.push({ x: currentPlayerX, y: currentPlayerY });
-  console.log(bombs);
+  // console.log(bombs);
   // draw  new field
   renderBoard();
 
   // timer for bomb (3 sec)
-  setTimeout(() => explodeBomb(currentPlayerX, currentPlayerY), 5000);
+  console.log(board[currentPlayerY][currentPlayerX]);
+  setTimeout(() => explodeBomb(currentPlayerX, currentPlayerY, 2), 3000);
 };
 
-const explodeBomb = (x, y) => {
-  // clean up the cell
-  bombs.splice(
-    bombs.findIndex((bomb) => bomb.x === x && bomb.y === y),
-    1,
-  );
-  board[y][x] = EMPTY;
-  // logic of effects to walls and player
+const explodeBomb = (x, y, radius) => {
+  // define explosion directions
+  const directions = [
+    { x: 0, y: 1 },
+    { x: 0, y: -1 },
+    { x: 1, y: 0 },
+    { x: -1, y: 0 },
+  ];
+  const animateExplosion = () => {
+    for (const direction of directions) {
+      for (let i = 0; i <= radius; i++) {
+        const targetX = x + direction.x * i;
+        const targetY = y + direction.y * i;
 
-  // draw new field
+        // Walls controll
+        if (board[targetY][targetX] === WALL) {
+          break;
+        }
+        // Mark cell as explosion
+        board[targetY][targetX] = EXPLOSION;
+
+        if (board[targetY][targetX] === BOMB) {
+          explodeBomb(targetX, targetY, explosionRadius);
+        }
+      }
+    }
+
+    // clean up the cell
+    bombs.splice(
+      bombs.findIndex((bomb) => bomb.x === x && bomb.y === y),
+      1,
+    );
+    // board[y][x] = EMPTY;
+    // logic of effects to walls and player
+
+    // draw new field
+    renderBoard();
+
+    // call animateExplosion again, till the end of animation time
+    if (animationFrameCounter < maxFrames) {
+      requestAnimationFrame(animateExplosion);
+      animationFrameCounter++;
+    } else {
+      //! not work yet
+      clearExplosion(bomb.x, bomb.y, explosionRadius);
+    }
+  };
+  let animationFrameCounter = 0;
+  const maxFrames = 60;
+  animateExplosion();
+};
+
+const clearExplosion = (x, y, explosionRadius) => {
+  // clear all cells
+  for (let i = 0; i <= explosionRadius; i++) {
+    const targetX = x + direction.x * i;
+    const targetY = y + direction.y * i;
+
+    board[targetY][targetX] = EMPTY;
+  }
+  // draw field
   renderBoard();
 };

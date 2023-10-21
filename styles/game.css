@@ -55,7 +55,9 @@ body {
 }
 
 .explosion {
-  background-color: orange;
+  background-image: url('/img/tileset.png');
+  background-position-x: 32px;
+  background-position-y: 64px;
 }
 .breakable-wall {
   background-image: url('/img/tileset.png');
