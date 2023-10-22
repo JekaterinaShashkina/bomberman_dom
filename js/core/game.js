@@ -100,15 +100,15 @@ const placeBomb = () => {
   console.log(board[currentPlayerY][currentPlayerX]);
   setTimeout(() => explodeBomb(currentPlayerX, currentPlayerY, 2), 3000);
 };
+// define explosion directions
+const directions = [
+  { x: 0, y: 1 },
+  { x: 0, y: -1 },
+  { x: 1, y: 0 },
+  { x: -1, y: 0 },
+];
 
 const explodeBomb = (x, y, radius) => {
-  // define explosion directions
-  const directions = [
-    { x: 0, y: 1 },
-    { x: 0, y: -1 },
-    { x: 1, y: 0 },
-    { x: -1, y: 0 },
-  ];
   const animateExplosion = () => {
     for (const direction of directions) {
       for (let i = 0; i <= radius; i++) {
@@ -145,7 +145,18 @@ const explodeBomb = (x, y, radius) => {
       animationFrameCounter++;
     } else {
       //! not work yet
-      clearExplosion(bomb.x, bomb.y, explosionRadius);
+      // clearExplosion(x, y, 2);
+      for (const direction of directions) {
+        for (let i = 0; i <= radius; i++) {
+          const targetX = x + direction.x * i;
+          const targetY = y + direction.y * i;
+          console.log(board[targetY][targetX]);
+          if (board[targetY][targetX] === WALL) {
+            break;
+          }
+          board[targetY][targetX] = EMPTY;
+        }
+      }
     }
   };
   let animationFrameCounter = 0;
@@ -155,11 +166,13 @@ const explodeBomb = (x, y, radius) => {
 
 const clearExplosion = (x, y, explosionRadius) => {
   // clear all cells
-  for (let i = 0; i <= explosionRadius; i++) {
-    const targetX = x + direction.x * i;
-    const targetY = y + direction.y * i;
+  for (const direction of directions) {
+    for (let i = 0; i <= explosionRadius; i++) {
+      const targetX = x + direction.x * i;
+      const targetY = y + direction.y * i;
 
-    board[targetY][targetX] = EMPTY;
+      board[targetY][targetX] = EMPTY;
+    }
   }
   // draw field
   renderBoard();
