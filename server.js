@@ -7,11 +7,12 @@ const app = express();
 const PORT = 3000;
 
 let playerCount = 0;
-const maxPlayers = 4;
-let countdown = 10;
+const maxPlayers = 1;
+let countdown = 3;
 const gameState = {
     players: {},
-    bombs: []
+    bombs: [],
+    
 };
 
 app.use(express.static(path.join(__dirname, '/')));
@@ -64,10 +65,10 @@ case 'join-game':
         gameState.players[playerID] = {
             nickname: clientData.nickname,
             position: { x: 0, y: 0 },
-            bombs: 1,
+            bombCount: 1,
             powerups: []
         };
-
+        
         wss.broadcast({ type: 'update-player-count', count: playerCount });
         ws.send(JSON.stringify({ type: 'joined-successfully', playerID: playerID, gameState: gameState }));
 
@@ -80,7 +81,7 @@ case 'join-game':
                     clearInterval(countdownInterval);
                     wss.broadcast({ type: 'game-start' });
                 }
-            }, 1000);
+            }, 300);
         }
     } else {
         ws.send(JSON.stringify({ type: 'join-error', message: 'Game is full!' }));
@@ -105,7 +106,7 @@ case 'place-bomb':
     break;
 
     case 'chat-message':
-        const serverNickname = "John";
+        const serverNickname = gameState.players.nickname;
         
         // This ensures the sender sees their own message.
         ws.send(JSON.stringify({
