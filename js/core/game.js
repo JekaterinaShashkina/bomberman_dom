@@ -10,7 +10,9 @@ import {
 } from './const.js';
 import { renderBoard } from './map.js';
 
+let canPlaceBomb = true;
 let playerPosition = { x: 0, y: 0 };
+ 
 
 // Initialize the game board
 export const initializeBoard = () => {
@@ -45,15 +47,6 @@ export const initializeBoard = () => {
   board[playerPosition.y][playerPosition.x] = PLAYER;
 };
 
-// // Entry point
-// const startGame = () => {
-//   initializeBoard();
-//   renderBoard();
-// };
-
-// // Start the game
-// startGame();
-
 export const handlePlayerMovement = (key) => {
   let newX = playerPosition.x;
   let newY = playerPosition.y;
@@ -68,39 +61,49 @@ export const handlePlayerMovement = (key) => {
     newX += 1;
   }
 
-  // New position move avalaibility control
+  // New position move availability control
   if (board[newY][newX] !== WALL && board[newY][newX] !== BREAKABLE_WALL) {
     if (board[playerPosition.y][playerPosition.x] !== BOMB) {
-      // renew player position
+      // Renew player position
       board[playerPosition.y][playerPosition.x] = EMPTY;
     }
     playerPosition = { x: newX, y: newY };
     board[newY][newX] = PLAYER;
 
-    // draw new game board
+    // Draw the new game board
     renderBoard();
   }
-  if (key === ' ' && board[playerPosition.y][playerPosition.x] !== BOMB) {
+  if (
+    key === ' ' &&
+    canPlaceBomb &&
+    board[playerPosition.y][playerPosition.x] !== BOMB
+  ) {
     placeBomb();
+    // Default bomb placement
+    canPlaceBomb = false;
+    setTimeout(() => {
+      canPlaceBomb = true;
+    }, 3000); // Timer set to 3000 so the player cannot place a bomb until the other bomb explodes
   }
 };
-const bombs = [];
+
+const bombs = [0];
 const placeBomb = () => {
   const currentPlayerX = playerPosition.x;
   const currentPlayerY = playerPosition.y;
 
-  //  place bomb on the current player position
+  // Place a bomb on the current player's position
   board[currentPlayerY][currentPlayerX] = BOMB;
   bombs.push({ x: currentPlayerX, y: currentPlayerY });
-  // console.log(bombs);
-  // draw  new field
+
+  // Draw the new field
   renderBoard();
 
-  // timer for bomb (3 sec)
-  console.log(board[currentPlayerY][currentPlayerX]);
+  // Timer for the bomb (3 sec)
   setTimeout(() => explodeBomb(currentPlayerX, currentPlayerY, 2), 3000);
 };
-// define explosion directions
+
+// Define explosion directions
 const directions = [
   { x: 0, y: 1 },
   { x: 0, y: -1 },
@@ -115,11 +118,11 @@ const explodeBomb = (x, y, radius) => {
         const targetX = x + direction.x * i;
         const targetY = y + direction.y * i;
 
-        // Walls controll
+        // Walls control
         if (board[targetY][targetX] === WALL) {
           break;
         }
-        // Mark cell as explosion
+        // Mark the cell as an explosion
         board[targetY][targetX] = EXPLOSION;
 
         if (board[targetY][targetX] === BOMB) {
@@ -128,29 +131,26 @@ const explodeBomb = (x, y, radius) => {
       }
     }
 
-    // clean up the cell
+    // Clean up the cell
     bombs.splice(
       bombs.findIndex((bomb) => bomb.x === x && bomb.y === y),
-      1,
+      1
     );
-    // board[y][x] = EMPTY;
-    // logic of effects to walls and player
 
-    // draw new field
+    // Draw the new field
     renderBoard();
+    
 
-    // call animateExplosion again, till the end of animation time
+    // Call animateExplosion again, till the end of animation time
     if (animationFrameCounter < maxFrames) {
       requestAnimationFrame(animateExplosion);
       animationFrameCounter++;
     } else {
-      //! not work yet
-      // clearExplosion(x, y, 2);
+      // Clear the explosion
       for (const direction of directions) {
         for (let i = 0; i <= radius; i++) {
           const targetX = x + direction.x * i;
           const targetY = y + direction.y * i;
-          console.log(board[targetY][targetX]);
           if (board[targetY][targetX] === WALL) {
             break;
           }
@@ -159,21 +159,21 @@ const explodeBomb = (x, y, radius) => {
       }
     }
   };
+
   let animationFrameCounter = 0;
   const maxFrames = 60;
   animateExplosion();
 };
 
 const clearExplosion = (x, y, explosionRadius) => {
-  // clear all cells
+  // Clear all cells
   for (const direction of directions) {
     for (let i = 0; i <= explosionRadius; i++) {
       const targetX = x + direction.x * i;
       const targetY = y + direction.y * i;
-
       board[targetY][targetX] = EMPTY;
     }
   }
-  // draw field
+  // Draw the field
   renderBoard();
 };
