@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
   messagesDiv = document.getElementById('messages');
 
   // Initialize game elements
-  initGame();
+  // initGame();
 
   // Event listeners
   sendButton.addEventListener('click', sendChatMessage);
@@ -40,7 +40,7 @@ window.addEventListener('keydown', (event) => {
   handlePlayerMovement(key);
 });
 
-function initGame() {
+export function initGame() {
   initializeBoard();
   renderBoard(mapSection);
 }

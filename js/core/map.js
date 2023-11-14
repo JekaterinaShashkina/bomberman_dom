@@ -10,7 +10,7 @@ import {
 } from './const.js ';
 
 // Render the game board
-export const renderBoard = () => {
+export const renderBoard = (board) => {
   const gameBoard = document.querySelector('.game-board');
   gameBoard.innerHTML = '';
 

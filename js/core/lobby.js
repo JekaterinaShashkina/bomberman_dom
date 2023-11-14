@@ -1,5 +1,7 @@
 import { timer } from '../utils/timer.js';
 import webSocketService from '../utils/websocket.js';
+import { board } from './const.js';
+import { renderBoard } from './map.js';
 
 document.addEventListener('DOMContentLoaded', function () {
   // Connect to WebSocket
@@ -53,7 +55,13 @@ document.addEventListener('DOMContentLoaded', function () {
         break;
 
       case 'game-start':
+        // board = data.map;
+        // ! карта передается успешно но не рендерится
+        const b = data.map;
+        console.log('come', b);
+        renderBoard(b);
         window.location.href = '/game';
+
         break;
     }
   });

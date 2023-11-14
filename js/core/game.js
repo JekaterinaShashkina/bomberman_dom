@@ -12,7 +12,6 @@ import { renderBoard } from './map.js';
 
 let canPlaceBomb = true;
 let playerPosition = { x: 0, y: 0 };
- 
 
 // Initialize the game board
 export const initializeBoard = () => {
@@ -41,6 +40,8 @@ export const initializeBoard = () => {
       }
     }
     board.push(row);
+    console.log(board);
+    // return board;
   }
   // Set player position
   playerPosition = { x: 1, y: 1 };
@@ -134,12 +135,11 @@ const explodeBomb = (x, y, radius) => {
     // Clean up the cell
     bombs.splice(
       bombs.findIndex((bomb) => bomb.x === x && bomb.y === y),
-      1
+      1,
     );
 
     // Draw the new field
     renderBoard();
-    
 
     // Call animateExplosion again, till the end of animation time
     if (animationFrameCounter < maxFrames) {
