@@ -57,11 +57,10 @@ document.addEventListener('DOMContentLoaded', function () {
       case 'game-start':
         // board = data.map;
         // ! карта передается успешно но не рендерится
-        const b = data.map;
-        console.log('come', b);
-        renderBoard(b);
+        // const b = data.map;
+        // console.log('come', b);
+        // renderBoard(data);
         window.location.href = '/game';
-
         break;
     }
   });

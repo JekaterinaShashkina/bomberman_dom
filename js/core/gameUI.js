@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
   messagesDiv = document.getElementById('messages');
 
   // Initialize game elements
-  // initGame();
+  initGame();
 
   // Event listeners
   sendButton.addEventListener('click', sendChatMessage);
