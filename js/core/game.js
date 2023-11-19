@@ -178,6 +178,12 @@ import { renderBoard } from './map.js';
 
 let playerPosition = { x: 0, y: 0 };
 let canPlaceBomb = true;
+const bombs = [];
+const animationDuration = 500; // in milliseconds
+const framesPerSecond = 60;
+const totalFrames = (animationDuration / 1000) * framesPerSecond;
+let animationFrameId;
+
 // Initialize the game board
 export const initializeBoard = () => {
   for (let i = 0; i < boardSize; i++) {
@@ -211,6 +217,50 @@ export const initializeBoard = () => {
   board[playerPosition.y][playerPosition.x] = PLAYER;
 };
 
+const animateStep = (startTime, startX, startY, endX, endY) => {
+  const currentTime = Date.now();
+  const progress = (currentTime - startTime) / animationDuration;
+  const deltaX = (endX - startX) / totalFrames;
+  const deltaY = (endY - startY) / totalFrames;
+
+  if (progress < 1) {
+    const interpolatedX = startX + progress * deltaX;
+    const interpolatedY = startY + progress * deltaY;
+
+    const roundedX = Math.round(interpolatedX);
+    const roundedY = Math.round(interpolatedY);
+
+    if (board[roundedY][roundedX] !== BOMB) {
+      board[roundedY][roundedX] = EMPTY;
+    }
+
+    playerPosition.x = interpolatedX;
+    playerPosition.y = interpolatedY;
+
+    renderBoard();
+
+    // Запустить следующий шаг анимации
+    requestAnimationFrame((newTime) =>
+      animateStep(newTime, startX, startY, endX, endY),
+    );
+  } else {
+    // Finish animation and update player position
+    const roundedX = Math.round(endX);
+    const roundedY = Math.round(endY);
+
+    if (
+      board[roundedY][roundedX] !== WALL &&
+      board[roundedY][roundedX] !== BREAKABLE_WALL
+    ) {
+      playerPosition.x = roundedX;
+      playerPosition.y = roundedY;
+      board[roundedY][roundedX] = PLAYER;
+    }
+
+    renderBoard();
+  }
+};
+
 export const handlePlayerMovement = (key) => {
   let newX = playerPosition.x;
   let newY = playerPosition.y;
@@ -227,67 +277,40 @@ export const handlePlayerMovement = (key) => {
   console.log(newX, newY);
   // New position move avalaibility control
   if (board[newY][newX] !== WALL && board[newY][newX] !== BREAKABLE_WALL) {
-    //   if (board[playerPosition.y][playerPosition.x] !== BOMB) {
-    //     // renew player position
-    //     board[playerPosition.y][playerPosition.x] = EMPTY;
-    //   }
-    //   playerPosition = { x: newX, y: newY };
-    //   board[newY][newX] = PLAYER;
-    //   // draw new game board
-    //   renderBoard();
-    // }
-    // if (key === ' ' && board[playerPosition.y][playerPosition.x] !== BOMB) {
-    //   placeBomb();
+    const startTime = Date.now();
+    const startX = playerPosition.x;
+    const startY = playerPosition.y;
 
-    // Define animation parameters
-    const animationDuration = 500; // in milliseconds
-    const framesPerSecond = 60;
-    const totalFrames = (animationDuration / 1000) * framesPerSecond;
-    const deltaX = (newX - playerPosition.x) / totalFrames;
-    const deltaY = (newY - playerPosition.y) / totalFrames;
+    // Запуск анимации
+    animationFrameId = requestAnimationFrame(() =>
+      animateStep(startTime, startX, startY, newX, newY),
+    );
+    // if (
+    //   board[Math.round(newY)][Math.round(newX)] !== WALL &&
+    //   board[Math.round(newY)][Math.round(newX)] !== BREAKABLE_WALL
+    // ) {
+    //   //   if (board[playerPosition.y][playerPosition.x] !== BOMB) {
+    //   //     // renew player position
+    //   //     board[playerPosition.y][playerPosition.x] = EMPTY;
+    //   //   }
+    //   //   playerPosition = { x: newX, y: newY };
+    //   //   board[newY][newX] = PLAYER;
+    //   //   // draw new game board
+    //   //   renderBoard();
+    //   // }
+    //   // if (key === ' ' && board[playerPosition.y][playerPosition.x] !== BOMB) {
+    //   //   placeBomb();
 
-    // Animation loop function
-    let frameCount = 0;
-    function animateStep() {
-      if (frameCount < totalFrames) {
-        if (board[playerPosition.y][playerPosition.x] !== BOMB) {
-          board[Math.round(playerPosition.y)][Math.round(playerPosition.x)] =
-            EMPTY;
-        }
-        playerPosition.x = Math.round(playerPosition.x + deltaX);
-        playerPosition.y = Math.round(playerPosition.y + deltaY);
-        board[newY][newX] = PLAYER;
-        if (
-          key === ' ' &&
-          board[playerPosition.y][playerPosition.x] &&
-          canPlaceBomb != BOMB
-        ) {
-          placeBomb();
-          canPlaceBomb = false;
-          setTimeout(() => {
-            canPlaceBomb = true;
-          }, 3000); // Timer set to 3000 so the player cannot place a bomb until the other bomb explodes
-        }
-        renderBoard();
-        frameCount++;
-        requestAnimationFrame(animateStep);
-      } else {
-        // Finish animation and update player position
-        playerPosition.x = newX;
-        playerPosition.y = newY;
-        board[newY][newX] = PLAYER;
-        // board[Math.round(playerPosition.y)][Math.round(playerPosition.x)] =
-        //   EMPTY;
-        console.log(newX, newY);
-        renderBoard();
-      }
-    }
-    // Start the animation
-    animateStep();
+    //   // Define animation parameters
+
+    //   // Animation loop function
+    //   let frameCount = 0;
+
+    //   // Start the animation
+    //   animateStep();
   }
 };
 
-const bombs = [];
 const placeBomb = () => {
   const currentPlayerX = playerPosition.x;
   const currentPlayerY = playerPosition.y;
