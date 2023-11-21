@@ -21,7 +21,6 @@ body {
 .cell {
   width: 32px;
   height: 32px;
-  border: 1px solid #ccc;
   box-sizing: border-box;
   background-image: url('/img/tileset.png');
   background-position-x: 96px;
@@ -37,8 +36,8 @@ body {
 .cell.player2 {
   /* background-color: blue; */
   background-image: url('/img/tileset.png');
-  background-position-x: 96px;
-  background-position-y: 96px;
+  background-position-x: 32px;
+  background-position-y: 32px;
 }
 
 .wall {
@@ -50,17 +49,30 @@ body {
 
 .cell.bomb {
   background-image: url('/img/tileset.png');
-  background-position-x: -32px;
+  background-position-x: 96px;
   background-position-y: 64px;
+  background-color: rgba(91, 137, 91, 0.669);
 }
 
 .explosion {
   background-image: url('/img/tileset.png');
   background-position-x: 32px;
   background-position-y: 64px;
+  background-color: rgba(91, 137, 91, 0.669);
 }
 .breakable-wall {
   background-image: url('/img/tileset.png');
   background-position-x: 32px;
   background-position-y: 96px;
+}
+.power-up-bomb-count {
+  background-image: url('/img/tileset.png');
+  background-position-x: -32px;
+  background-position-y: 64px;
+  
+}
+.power-up-speed-count {
+  background-image: url('/img/tileset.png');
+  background-position-x: -32px;
+  background-position-y: 32px;
 }
