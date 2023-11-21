@@ -69,10 +69,14 @@ body {
   background-image: url('/img/tileset.png');
   background-position-x: -32px;
   background-position-y: 64px;
-  
 }
 .power-up-speed-count {
   background-image: url('/img/tileset.png');
   background-position-x: -32px;
   background-position-y: 32px;
+}
+.power-up-flame-count {
+  background-image: url('/img/tileset.png');
+  background-position-x: 32px;
+  background-position-y: 64px;
 }

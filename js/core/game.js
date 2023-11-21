@@ -8,6 +8,7 @@ import {
   EXPLOSION,
   POWER_UP_BOMB_COUNT,
   POWER_UP_SPEED_COUNT,
+  POWER_UP_FLAME_COUNT,
   board,
 } from './const.js';
 import { renderBoard } from './map.js';
@@ -56,12 +57,23 @@ export const initializeBoard = () => {
   board[playerPosition.y][playerPosition.x] = PLAYER;
 };
 
+const powerUpsTypes = [
+  POWER_UP_BOMB_COUNT,
+  POWER_UP_SPEED_COUNT,
+  POWER_UP_FLAME_COUNT,
+];
+const powerUps = [];
 const getRandomPowerUpType = () => {
-  const powerUps = [POWER_UP_BOMB_COUNT, POWER_UP_SPEED_COUNT];
-  const randomIndex = Math.floor(Math.random() * powerUps.length);
-  const selectedPowerUp = powerUps[randomIndex];
+  const selectedPowerUp =
+    powerUpsTypes[Math.floor(Math.random() * powerUpsTypes.length)];
   console.log('Selected Power-Up:', selectedPowerUp);
   return selectedPowerUp;
+};
+const placePowerUp = (x, y) => {
+  if (board[y][x] === EMPTY) {
+    board[y][x] = getRandomPowerUpType();
+    renderBoard();
+  }
 };
 
 const animateStep = (startTime, startX, startY, endX, endY) => {
@@ -229,6 +241,7 @@ const explodeBomb = (x, y, radius) => {
             board[targetY][targetX] = EMPTY;
           }
         }
+        placePowerUp(x, y);
         renderBoard();
       }, 500); // Adjust the time as needed
     }
