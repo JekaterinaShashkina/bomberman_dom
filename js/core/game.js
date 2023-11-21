@@ -172,6 +172,8 @@ import {
   BREAKABLE_WALL,
   PLAYER,
   EXPLOSION,
+  POWER_UP_BOMB_COUNT,
+  POWER_UP_SPEED_COUNT,
   board,
 } from './const.js';
 import { renderBoard } from './map.js';
@@ -197,14 +199,13 @@ export const initializeBoard = () => {
         j === 0 ||
         j === boardSize - 1 ||
         (i % 2 === 0 && j % 2 === 0)
-        // Math.random() < 0.2
       ) {
         row.push(WALL);
       } else if (
         i % 2 === 1 &&
         j % 2 === 1 &&
         !(i === 1 && j === 1) &&
-        Math.random() < 0.4
+        Math.random() < 0.8
       ) {
         row.push(BREAKABLE_WALL);
       } else {
@@ -213,10 +214,21 @@ export const initializeBoard = () => {
     }
     board.push(row);
   }
+
   // Set player position
   playerPosition = { x: 1, y: 1 };
   board[playerPosition.y][playerPosition.x] = PLAYER;
 };
+
+
+const getRandomPowerUpType = () => {
+  const powerUps = [POWER_UP_BOMB_COUNT, POWER_UP_SPEED_COUNT];
+  const randomIndex = Math.floor(Math.random()* powerUps.length);
+  const selectedPowerUp = powerUps[randomIndex];
+  console.log('Selected Power-Up:', selectedPowerUp);
+  return selectedPowerUp;
+
+}
 
 const animateStep = (startTime, startX, startY, endX, endY) => {
   const currentTime = Date.now();
@@ -337,9 +349,17 @@ const explodeBomb = (x, y, radius) => {
         if (board[targetY][targetX] === WALL) {
           break;
         }
-        // Mark cell as explosion
-        board[targetY][targetX] = EXPLOSION;
-
+        if (board[targetY][targetX] === BREAKABLE_WALL) {
+          if (Math.random() < 0.3) {
+            const powerUpType = getRandomPowerUpType();
+            board[targetY][targetX] = powerUpType;
+          } else {
+            board[targetY][targetX] = EMPTY;
+          }
+        } else {
+          // Mark cell as explosion
+          board[targetY][targetX] = EXPLOSION;
+        }
         if (board[targetY][targetX] === BOMB) {
           explodeBomb(targetX, targetY, explosionRadius);
         }
@@ -351,22 +371,11 @@ const explodeBomb = (x, y, radius) => {
     // Draw new field
     renderBoard();
 
-    // Call animateExplosion again until the end of animation time
+    // Call animateExplosion again until the end of the animation time
     if (animationFrameCounter < maxFrames) {
       requestAnimationFrame(animateExplosion);
       animationFrameCounter++;
     } else {
-      // for (const direction of directions) {
-      //   for (let i = 0; i <= radius; i++) {
-      //     const targetX = x + direction.x * i;
-      //     const targetY = y + direction.y * i;
-      //     console.log(board[targetY][targetX]);
-      //     if (board[targetY][targetX] === WALL) {
-      //       break;
-      //     }
-      //     board[targetY][targetX] = EMPTY;
-      //   }
-      // }
       // Set timeout to remove the explosion after a certain time
       setTimeout(() => {
         for (const direction of directions) {
