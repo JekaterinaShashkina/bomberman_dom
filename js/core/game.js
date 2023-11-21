@@ -178,6 +178,7 @@ import {
 } from './const.js';
 import { renderBoard } from './map.js';
 
+let lives = document.querySelector('#lives-count');
 let playerPosition = { x: 0, y: 0 };
 const bombs = [];
 const animationDuration = 500; // in milliseconds
@@ -186,6 +187,7 @@ const totalFrames = (animationDuration / 1000) * framesPerSecond;
 let animationFrameId;
 let placeBombFlag = false;
 let isBombPlaced = false;
+let playerLives = 3;
 
 // Initialize the game board
 export const initializeBoard = () => {
@@ -220,15 +222,13 @@ export const initializeBoard = () => {
   board[playerPosition.y][playerPosition.x] = PLAYER;
 };
 
-
 const getRandomPowerUpType = () => {
   const powerUps = [POWER_UP_BOMB_COUNT, POWER_UP_SPEED_COUNT];
-  const randomIndex = Math.floor(Math.random()* powerUps.length);
+  const randomIndex = Math.floor(Math.random() * powerUps.length);
   const selectedPowerUp = powerUps[randomIndex];
   console.log('Selected Power-Up:', selectedPowerUp);
   return selectedPowerUp;
-
-}
+};
 
 const animateStep = (startTime, startX, startY, endX, endY) => {
   const currentTime = Date.now();
@@ -349,6 +349,12 @@ const explodeBomb = (x, y, radius) => {
         if (board[targetY][targetX] === WALL) {
           break;
         }
+        // Check if player is in the explosion area
+        if (targetX === playerPosition.x && targetY === playerPosition.y) {
+          playerDies(); // Вызываем функцию обработки смерти
+          // return;
+        }
+
         if (board[targetY][targetX] === BREAKABLE_WALL) {
           if (Math.random() < 0.3) {
             const powerUpType = getRandomPowerUpType();
@@ -360,14 +366,15 @@ const explodeBomb = (x, y, radius) => {
           // Mark cell as explosion
           board[targetY][targetX] = EXPLOSION;
         }
-        if (board[targetY][targetX] === BOMB) {
+
+        if (
+          board[targetY][targetX] === BOMB ||
+          board[targetY][targetX] === PLAYER
+        ) {
           explodeBomb(targetX, targetY, explosionRadius);
         }
       }
     }
-
-    // Logic of effects to walls and player
-
     // Draw new field
     renderBoard();
 
@@ -396,4 +403,20 @@ const explodeBomb = (x, y, radius) => {
   let animationFrameCounter = 0;
   const maxFrames = 60;
   animateExplosion();
+};
+const resetPlayerPosition = () => {
+  playerPosition = { x: 1, y: 1 };
+  board[playerPosition.y][playerPosition.x] = PLAYER;
+};
+const playerDies = () => {
+  playerLives--;
+
+  if (playerLives <= 0) {
+    lives.textContent = 'You die. The end of game';
+  } else {
+    resetPlayerPosition();
+    console.log(playerLives);
+    renderBoard();
+    lives.textContent = playerLives;
+  }
 };
