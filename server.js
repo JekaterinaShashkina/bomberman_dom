@@ -7,8 +7,8 @@ const app = express();
 const PORT = 3000;
 
 let playerCount = 0;
-const maxPlayers = 2;
-let countdown = 15;
+const maxPlayers = 1;
+let countdown = 3;
 const gameState = {
   players: {},
   bombs: [],
@@ -21,6 +21,10 @@ const PLAYER = 2;
 const BOMB = 3;
 const EXPLOSION = 4;
 const BREAKABLE_WALL = 5;
+const POWER_UP_BOMB_COUNT = 6
+const POWER_UP_SPEED_COUNT = 7
+const POWER_UP_FLAME_COUNT = 8
+
 
 const initializeBoard = (boardSize) => {
   for (let i = 0; i < boardSize; i++) {
@@ -33,29 +37,40 @@ const initializeBoard = (boardSize) => {
         j === 0 ||
         j === boardSize - 1 ||
         (i % 2 === 0 && j % 2 === 0)
-        // Math.random() < 0.2
       ) {
         row.push(WALL);
       } else if (
         i % 2 === 1 &&
         j % 2 === 1 &&
         !(i === 1 && j === 1) &&
-        Math.random() < 0.6
+        Math.random() < 0.8
       ) {
+        const randomPowerup = getRandomPowerUpType();
+        row.push(randomPowerup);
+        console.log('randompower up check', randomPowerup);
+      } else if (i % 2 === 1 && j % 2 === 1 && !(i === 1 && j === 1) && Math.random() < 0.7) {
         row.push(BREAKABLE_WALL);
       } else {
         row.push(EMPTY);
       }
     }
     board.push(row);
-    console.log(board);
   }
 
-  // // Set player position
+  // Set player position
   playerPosition = { x: 1, y: 1 };
   board[playerPosition.y][playerPosition.x] = PLAYER;
+
   return board;
 };
+
+const getRandomPowerUpType = () => {
+    const powerUps = [POWER_UP_BOMB_COUNT, POWER_UP_FLAME_COUNT, POWER_UP_SPEED_COUNT];
+    const randomIndex = Math.floor(Math.random()* powerUps.length);
+    const selectedPowerUp = powerUps[randomIndex];
+    console.log('Selected Power-up:', selectedPowerUp);
+    return selectedPowerUp;
+}
 
 const map = initializeBoard(15);
 
