@@ -23,6 +23,7 @@ let animationFrameId;
 let placeBombFlag = false;
 let isBombPlaced = false;
 let playerLives = 3;
+let bombCountPowerUpActive = false;
 
 // Initialize the game board
 export const initializeBoard = () => {
@@ -36,13 +37,14 @@ export const initializeBoard = () => {
         j === 0 ||
         j === boardSize - 1 ||
         (i % 2 === 0 && j % 2 === 0)
+        // Math.random() < 0.2
       ) {
         row.push(WALL);
       } else if (
         i % 2 === 1 &&
         j % 2 === 1 &&
         !(i === 1 && j === 1) &&
-        Math.random() < 0.8
+        Math.random() < 0.4
       ) {
         row.push(BREAKABLE_WALL);
       } else {
@@ -51,12 +53,10 @@ export const initializeBoard = () => {
     }
     board.push(row);
   }
-
   // Set player position
   playerPosition = { x: 1, y: 1 };
   board[playerPosition.y][playerPosition.x] = PLAYER;
 };
-
 const powerUpsTypes = [
   POWER_UP_BOMB_COUNT,
   POWER_UP_SPEED_COUNT,
@@ -73,6 +73,64 @@ const placePowerUp = (x, y) => {
   if (board[y][x] === EMPTY) {
     board[y][x] = getRandomPowerUpType();
     renderBoard();
+  }
+  powerUps.push({ x, y, type: board[y][x] });
+  console.log(...powerUps);
+};
+
+const collectPowerUp = () => {
+  const currentPlayerX = Math.round(playerPosition.x);
+  const currentPlayerY = Math.round(playerPosition.y);
+
+  for (let i = 0; i < powerUps.length; i++) {
+    const powerUp = powerUps[i];
+    if (powerUp.x === currentPlayerX && powerUp.y === currentPlayerY) {
+      // Apply the effect of the power-up
+      applyPowerUpEffect(powerUp.type);
+
+      // Remove the collected power-up
+      powerUps.splice(i, 1);
+      renderBoard();
+      break; // Stop searching for power-ups once one is collected
+    }
+  }
+};
+let powerUpStartTime; // Время начала действия усилителя
+// let powerUpDuration = 30000; // Пример: 30 секунд
+const applyPowerUpEffect = (powerUpType) => {
+  switch (powerUpType) {
+    case POWER_UP_BOMB_COUNT:
+      powerUpStartTime = performance.now();
+      console.log('Bomb count +');
+      // Increase bomb count
+      bombCountPowerUpActive = true;
+      // Получаем текущее время
+      const startTime = performance.now();
+      const updateEffect = (timestamp) => {
+        const elapsedTime = timestamp - startTime;
+        if (elapsedTime < 30000) {
+          // 30 секунд в миллисекундах
+          // Продлить эффект
+          requestAnimationFrame(updateEffect);
+        } else {
+          // Сбрасываем флаг после истечения времени
+          bombCountPowerUpActive = false;
+        }
+      };
+      // Запускаем цикл анимации для отслеживания времени
+      requestAnimationFrame(updateEffect);
+      break;
+    case POWER_UP_SPEED_COUNT:
+      console.log('speed up');
+      // Increase player speed
+      // Implement your logic here
+      break;
+    case POWER_UP_FLAME_COUNT:
+      console.log('flame increase');
+      // Increase bomb explosion radius
+      // Implement your logic here
+      break;
+    // Add more cases for other power-up types if needed
   }
 };
 
@@ -142,7 +200,6 @@ export const handlePlayerMovement = (key) => {
     placeBombFlag = true;
   }
 
-  console.log(newX, newY);
   // New position move avalaibility control
   if (board[newY][newX] !== WALL && board[newY][newX] !== BREAKABLE_WALL) {
     const startTime = Date.now();
@@ -153,19 +210,24 @@ export const handlePlayerMovement = (key) => {
     animationFrameId = requestAnimationFrame(() =>
       animateStep(startTime, startX, startY, newX, newY),
     );
+    // Collect power-ups
+    collectPowerUp();
   }
 };
 
 const placeBomb = () => {
-  if (!isBombPlaced) {
+  if (
+    (!isBombPlaced && !bombCountPowerUpActive) ||
+    (bombCountPowerUpActive && bombs.length < 2)
+  ) {
     const currentPlayerX = playerPosition.x;
     const currentPlayerY = playerPosition.y;
 
     //  place bomb on the current player position
     board[currentPlayerY][currentPlayerX] = BOMB;
     bombs.push({ x: currentPlayerX, y: currentPlayerY });
-    console.log(board[currentPlayerY][currentPlayerX]);
-
+    console.log(currentPlayerY, currentPlayerX);
+    console.log(...bombs);
     isBombPlaced = true;
     // draw  new field
     renderBoard();
@@ -200,7 +262,6 @@ const explodeBomb = (x, y, radius) => {
           playerDies(); // Вызываем функцию обработки смерти
           // return;
         }
-
         if (board[targetY][targetX] === BREAKABLE_WALL) {
           if (Math.random() < 0.3) {
             const powerUpType = getRandomPowerUpType();
@@ -224,11 +285,22 @@ const explodeBomb = (x, y, radius) => {
     // Draw new field
     renderBoard();
 
-    // Call animateExplosion again until the end of the animation time
+    // Call animateExplosion again until the end of animation time
     if (animationFrameCounter < maxFrames) {
       requestAnimationFrame(animateExplosion);
       animationFrameCounter++;
     } else {
+      // for (const direction of directions) {
+      //   for (let i = 0; i <= radius; i++) {
+      //     const targetX = x + direction.x * i;
+      //     const targetY = y + direction.y * i;
+      //     console.log(board[targetY][targetX]);
+      //     if (board[targetY][targetX] === WALL) {
+      //       break;
+      //     }
+      //     board[targetY][targetX] = EMPTY;
+      //   }
+      // }
       // Set timeout to remove the explosion after a certain time
       setTimeout(() => {
         for (const direction of directions) {
@@ -246,11 +318,18 @@ const explodeBomb = (x, y, radius) => {
       }, 500); // Adjust the time as needed
     }
   };
-
+  // bombs.splice(
+  const i = bombs.findIndex((bomb) => bomb.x === x && bomb.y === y);
+  console.log(i);
+  bombs.splice(i, 1);
+  //   1,
+  // );
+  console.log(bombs);
   let animationFrameCounter = 0;
   const maxFrames = 60;
   animateExplosion();
 };
+
 const resetPlayerPosition = () => {
   playerPosition = { x: 1, y: 1 };
   board[playerPosition.y][playerPosition.x] = PLAYER;
@@ -259,11 +338,10 @@ const playerDies = () => {
   playerLives--;
 
   if (playerLives <= 0) {
-    lives.textContent = 'You die. The end of game';
+    lives.innerHTML = 'You die. The end of game';
   } else {
     resetPlayerPosition();
-    console.log(playerLives);
     renderBoard();
-    lives.textContent = playerLives;
+    lives.innerHTML = playerLives;
   }
 };
