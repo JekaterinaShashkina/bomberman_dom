@@ -104,20 +104,19 @@ const applyPowerUpEffect = (powerUpType) => {
       console.log('Bomb count +');
       // Increase bomb count
       bombCountPowerUpActive = true;
-      // Получаем текущее время
+      // Getting the current time.
       const startTime = performance.now();
       const updateEffect = (timestamp) => {
         const elapsedTime = timestamp - startTime;
         if (elapsedTime < 30000) {
-          // 30 секунд в миллисекундах
-          // Продлить эффект
+          // Extend the effect.
           requestAnimationFrame(updateEffect);
         } else {
-          // Сбрасываем флаг после истечения времени
+          // Resetting the flag after the time expires
           bombCountPowerUpActive = false;
         }
       };
-      // Запускаем цикл анимации для отслеживания времени
+      // Launching the animation loop to track the time.
       requestAnimationFrame(updateEffect);
       break;
     case POWER_UP_SPEED_COUNT:
