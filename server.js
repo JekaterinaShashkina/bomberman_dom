@@ -7,8 +7,8 @@ const app = express();
 const PORT = 3000;
 
 let playerCount = 0;
-const maxPlayers = 1;
-let countdown = 3;
+const maxPlayers = 2;
+let countdown = 5;
 const gameState = {
   players: {},
   bombs: [],
@@ -147,7 +147,7 @@ wss.on('connection', (ws) => {
                 clearInterval(countdownInterval);
                 wss.broadcast({ type: 'game-start', map: map });
               }
-            }, 300);
+            }, 1000);
           }
         } else {
           ws.send(
