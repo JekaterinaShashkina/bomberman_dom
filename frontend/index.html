@@ -9,29 +9,9 @@
   </head>
 
   <body>
-    <main id="lobby-container">
-      <h1>Welcome to Bomberman-DOM</h1>
-      <section id="nickname-section">
-        <label for="nickname-input">Enter your nickname:</label>
-        <input
-          type="text"
-          id="nickname-input"
-          placeholder="Nickname"
-          required
-        />
-        <button id="join-button">Join Game</button>
-      </section>
-      <section id="waiting-section">
-        <p>Waiting for players... <span class="wait__players"></span></p>
-        <div id="player-counter">
-          Current Players: <span id="player-count">0</span>/4
-        </div>
-        <div id="timer">
-          Game starts in:
-          <div id="countdown"><span class="count__sec"></span> seconds</div>
-        </div>
-      </section>
+    <main id="app">
     </main>
     <script type="module" src="js/core/lobby.js"></script>
+    <script type="module" src="js/main.js"></script>
   </body>
 </html>

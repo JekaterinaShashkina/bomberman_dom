@@ -9,8 +9,8 @@ const pathToFrontend = '../frontend'
 const frontendDirname = path.join(__dirname, pathToFrontend)
 
 let playerCount = 0;
-const maxPlayers = 2;
-let countdown = 5;
+const maxPlayers = 1;
+let countdown = 3;
 const gameState = {
   players: {},
   bombs: [],

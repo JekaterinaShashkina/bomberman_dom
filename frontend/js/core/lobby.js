@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
   webSocketService.addMessageHandler((data) => {
     switch (data.type) {
       case 'update-player-count':
-        playerCounter.innerText = `${data.count}/4`;
+        playerCounter.innerHTML = `${data.count}/4`;
         break;
 
       case 'update-countdown':
