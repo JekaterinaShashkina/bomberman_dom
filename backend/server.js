@@ -5,6 +5,8 @@ const WebSocket = require('ws');
 
 const app = express();
 const PORT = 3000;
+const pathToFrontend = '../frontend'
+const frontendDirname = path.join(__dirname, pathToFrontend)
 
 let playerCount = 0;
 const maxPlayers = 2;
@@ -74,14 +76,14 @@ const getRandomPowerUpType = () => {
 
 const map = initializeBoard(15);
 
-app.use(express.static(path.join(__dirname, '/')));
+app.use(express.static(path.join(frontendDirname, '/')));
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(frontendDirname, 'index.html'));
 });
 
 app.get('/game', (req, res) => {
-  res.sendFile(path.join(__dirname, 'game.html'));
+  res.sendFile(path.join(frontendDirname, 'game.html'));
 });
 
 const server = http.createServer(app);

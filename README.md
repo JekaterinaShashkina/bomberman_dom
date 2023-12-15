@@ -4,5 +4,3 @@ To start the server, open the terminal, go to the "bomber" folder, and enter the
 
 For launching "lobby" run index.html
 For looking game field and firststeps oof game open game.html
-
-change
