@@ -11,17 +11,18 @@ import {
   POWER_UP_FLAME_COUNT,
   board,
 } from './const.js';
+// import gameUpdates from './gameUpdates.js';
 import { renderBoard } from './map.js';
-import webSocketService from '../utils/websocket.js';
 
 const DEFAULT_EXPLOSION_RADIUS = 1;
 const bombs = [];
 const animationDuration = 500; // in milliseconds
 const framesPerSecond = 60;
 const totalFrames = (animationDuration / 1000) * framesPerSecond;
+// const update = new gameUpdates()
 
 let lives = document.querySelector('#lives-count');
-let playerPosition = { x: 0, y: 0 };
+let playerPosition = { x: 1, y: 1 };
 let animationFrameId;
 let placeBombFlag = false;
 let isBombPlaced = false;
@@ -30,38 +31,12 @@ let bombCountPowerUpActive = false;
 let explosionRadius = DEFAULT_EXPLOSION_RADIUS;
 let playerSpeed = 1;
 
-// Initialize the game board
-export const initializeBoard = () => {
-  for (let i = 0; i < boardSize; i++) {
-    const row = [];
-    for (let j = 0; j < boardSize; j++) {
-      // Add walls on the borders and at even cells
-      if (
-        i === 0 ||
-        i === boardSize - 1 ||
-        j === 0 ||
-        j === boardSize - 1 ||
-        (i % 2 === 0 && j % 2 === 0)
-        // Math.random() < 0.2
-      ) {
-        row.push(WALL);
-      } else if (
-        i % 2 === 1 &&
-        j % 2 === 1 &&
-        !(i === 1 && j === 1) &&
-        Math.random() < 0.4
-      ) {
-        row.push(BREAKABLE_WALL);
-      } else {
-        row.push(EMPTY);
-      }
-    }
-    board.push(row);
+export const setBoard = (startBoard) => {
+  for (let i = 0; i < startBoard.length; i++) {
+    board.push(startBoard[i]);
   }
-  // Set player position
-  playerPosition = { x: 1, y: 1 };
-  board[playerPosition.y][playerPosition.x] = PLAYER;
-};
+}
+
 const powerUpsTypes = [
   POWER_UP_BOMB_COUNT,
   POWER_UP_SPEED_COUNT,
@@ -195,6 +170,7 @@ const animateStep = (startTime, startX, startY, endX, endY) => {
       board[roundedY][roundedX] = PLAYER;
     }
 
+    // update.movePlayer({y: roundedY, x: roundedX})
     renderBoard();
   }
 };
@@ -202,7 +178,8 @@ const animateStep = (startTime, startX, startY, endX, endY) => {
 export const handlePlayerMovement = (key) => {
   let newX = playerPosition.x;
   let newY = playerPosition.y;
-  console.log(key);
+  console.log(key)
+  // console.log(key);
   if (key === 'ArrowUp' && playerPosition.y > 0) {
     newY -= 1;
   } else if (key === 'ArrowDown' && playerPosition.y < boardSize - 1) {

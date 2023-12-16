@@ -6,31 +6,57 @@
     <title>Bomberman-DOM Lobby</title>
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;," />
     <link rel="stylesheet" href="styles/main.css" />
+    <link rel="stylesheet" href="styles/game.css" />
+    <link rel="stylesheet" href="styles/chat.css" />
   </head>
   <body>
     <main id="lobby-container">
       <h1>Welcome to Bomberman-DOM</h1>
       <section id="nickname-section">
         <label for="nickname-input">Enter your nickname:</label>
-        <input
-          type="text"
-          id="nickname-input"
-          placeholder="Nickname"
-          required
-        />
+        <input type="text" id="nickname-input" placeholder="Nickname" required />
         <button id="join-button">Join Game</button>
       </section>
       <section id="waiting-section">
         <p>Waiting for players... <span class="wait__players"></span></p>
-        <div id="player-counter">
-          Current Players: <span id="player-count">0</span>/4
-        </div>
+        <div id="player-counter">Current Players: <span id="player-count">0</span>/4</div>
         <div id="timer">
           Game starts in:
           <div id="countdown"><span class="count__sec"></span> seconds</div>
         </div>
       </section>
     </main>
-    <script type="module" src="js/core/lobby.js"></script>
+    
+    <div id="game" style="display: none">
+      <main id="game-container">
+        <div class="game-board"></div>
+        <aside id="game-info">
+          <div id="score">Score: <span id="score-count">0</span></div>
+          <div id="level">Level: <span id="level-count">1</span></div>
+          <div id="lives">Lives: <span id="lives-count">3</span></div>
+          <div id="powerups">
+            Bombs: <span id="bomb-count">1</span> Flames: <span id="flame-count">1</span> Speed:
+            <span id="speed-level">1</span>
+          </div>
+          <button id="start-pause">Start</button>
+        </aside>
+      </main>
+      <section id="chat-container">
+        <div id="messages"></div>
+        <div id="chat-input-container">
+          <form id="chat-form">
+            <input type="text" id="chat-input" placeholder="Type your message..." />
+            <button type="submit" id="send-button">Send</button>
+          </form>
+        </div>
+      </section>
+    </div>
   </body>
-</html>
+  <script type="module" src="js/main.js"></script>
+  
+  <script type="module" src="js/core/gameUI.js"></script>
+  <script type="module" src="js/core/player.js"></script>
+  <script type="module" src="js/chat/chat.js"></script>
+  <script type="module" src="js/chat/message.js"></script>
+  </html>
+  

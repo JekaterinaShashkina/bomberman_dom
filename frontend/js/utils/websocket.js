@@ -1,6 +1,6 @@
 const WEBSOCKET_SERVER_URL = 'ws://localhost:3000';
 
-class WebSocketService {
+export default class WebSocketService {
     constructor() {
         this.socket = null;
         this.messageHandlers = [];
@@ -39,6 +39,7 @@ class WebSocketService {
                 this.messageHandlers.forEach(handler => handler(data));
             } catch (error) {
                 console.warn('Received a non-JSON message:', event.data);
+                console.error(error)
             }
         };
 
@@ -86,10 +87,3 @@ class WebSocketService {
         }
     }
 }
-// ... other WebSocket event handlers ...
-
-
-
-
-const webSocketService = new WebSocketService();
-export default webSocketService;

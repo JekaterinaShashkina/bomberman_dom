@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Handle incoming WebSocket messages
   webSocketService.addMessageHandler((data) => {
+    console.log(data)
     switch (data.type) {
       case 'update-player-count':
         playerCounter.innerHTML = data.count;

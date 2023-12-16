@@ -27,7 +27,6 @@ const POWER_UP_BOMB_COUNT = 6
 const POWER_UP_SPEED_COUNT = 7
 const POWER_UP_FLAME_COUNT = 8
 
-
 const initializeBoard = (boardSize) => {
   for (let i = 0; i < boardSize; i++) {
     const row = [];
@@ -39,18 +38,15 @@ const initializeBoard = (boardSize) => {
         j === 0 ||
         j === boardSize - 1 ||
         (i % 2 === 0 && j % 2 === 0)
+        // Math.random() < 0.2
       ) {
         row.push(WALL);
       } else if (
         i % 2 === 1 &&
         j % 2 === 1 &&
         !(i === 1 && j === 1) &&
-        Math.random() < 0.8
+        Math.random() < 0.4
       ) {
-        const randomPowerup = getRandomPowerUpType();
-        row.push(randomPowerup);
-        console.log('randompower up check', randomPowerup);
-      } else if (i % 2 === 1 && j % 2 === 1 && !(i === 1 && j === 1) && Math.random() < 0.7) {
         row.push(BREAKABLE_WALL);
       } else {
         row.push(EMPTY);
@@ -58,21 +54,12 @@ const initializeBoard = (boardSize) => {
     }
     board.push(row);
   }
-
   // Set player position
   playerPosition = { x: 1, y: 1 };
   board[playerPosition.y][playerPosition.x] = PLAYER;
 
   return board;
 };
-
-const getRandomPowerUpType = () => {
-    const powerUps = [POWER_UP_BOMB_COUNT, POWER_UP_FLAME_COUNT, POWER_UP_SPEED_COUNT];
-    const randomIndex = Math.floor(Math.random()* powerUps.length);
-    const selectedPowerUp = powerUps[randomIndex];
-    console.log('Selected Power-up:', selectedPowerUp);
-    return selectedPowerUp;
-}
 
 const map = initializeBoard(15);
 
@@ -100,10 +87,6 @@ wss.broadcast = (data, excludeClient) => {
 };
 
 wss.on('connection', (ws) => {
-  // if (req.url === '/game') {
-  //   const mapData = generateMap();
-  //   ws.send(JSON.stringify({ type: 'map-data', mapData }));
-  // }
   ws.on('message', (message) => {
     console.log('Raw received message:', message);
     console.log('String version of message:', message.toString());
@@ -117,6 +100,7 @@ wss.on('connection', (ws) => {
       return;
     }
 
+    console.log(clientData)
     switch (clientData.type) {
       //... [your other case handlers]
       case 'join-game':
@@ -159,15 +143,15 @@ wss.on('connection', (ws) => {
         break;
 
       case 'player-move':
-        const player = gameState.players[clientData.playerID];
-        if (player) {
-          player.position = clientData.position;
+        // const player = gameState.players[clientData.playerID];
+        // if (player) {
+          // player.position = clientData.position;
           wss.broadcast({
-            type: 'player-updated',
+            type: 'player-move',
             playerID: clientData.playerID,
             position: clientData.position,
           });
-        }
+        // }
         break;
 
       case 'place-bomb':

@@ -1,5 +1,5 @@
 import { Message } from './message.js';
-import webSocketService from '../utils/websocket.js';
+import WebSocketService from '../utils/websocket.js';
 
 class Chat {
     constructor(chatInput, chatForm, messagesDiv) {
@@ -12,7 +12,8 @@ class Chat {
             console.log('Input field changed:', e.target.value);
         });
 
-        webSocketService.addMessageHandler(data => {
+        this.webSocketService = new WebSocketService()
+        this.webSocketService.addMessageHandler(data => {
             console.log('Received data from server:', data);
             if (data.type === 'chat-message') {
                 this.displayMessage(data.sender, data.text);
@@ -47,7 +48,7 @@ class Chat {
             };
             
             console.log('About to send message:', payload);
-            webSocketService.send(payload);
+            this.webSocketService.send(payload);
             
             this.displayMessage(nicknameValue, messageContent);
             this.chatInput.value = '';

@@ -3,10 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Bomberman-DOM - A classic Bomberman game built with JavaScript."
-    />
+    <meta name="description" content="Bomberman-DOM - A classic Bomberman game built with JavaScript." />
     <meta name="keywords" content="Bomberman, Game, JavaScript, DOM" />
     <title>Bomberman-DOM</title>
     <link rel="stylesheet" href="styles/main.css" />
@@ -18,18 +15,17 @@
 
   <body>
     <div id="game">
-
       <main id="game-container">
         <div class="game-board"></div>
-        
+
         <!-- <section id="map"></section> -->
         <aside id="game-info">
           <div id="score">Score: <span id="score-count">0</span></div>
           <div id="level">Level: <span id="level-count">1</span></div>
           <div id="lives">Lives: <span id="lives-count">3</span></div>
           <div id="powerups">
-            Bombs: <span id="bomb-count">1</span> Flames:
-            <span id="flame-count">1</span> Speed: <span id="speed-level">1</span>
+            Bombs: <span id="bomb-count">1</span> Flames: <span id="flame-count">1</span> Speed:
+            <span id="speed-level">1</span>
           </div>
           <button id="start-pause">Start</button>
         </aside>
@@ -38,20 +34,16 @@
         <div id="messages"></div>
         <div id="chat-input-container">
           <form id="chat-form">
-            <input
-            type="text"
-            id="chat-input"
-            placeholder="Type your message..."
-            />
+            <input type="text" id="chat-input" placeholder="Type your message..." />
             <button type="submit" id="send-button">Send</button>
           </form>
         </div>
       </section>
     </div>
-      
-      <!-- JavaScript scripts -->
-      
-      <!-- <script type="module" src="js/core/map.js"></script> -->
+
+    <!-- JavaScript scripts -->
+
+    <!-- <script type="module" src="js/core/map.js"></script> -->
     <script type="module" src="js/core/player.js"></script>
 
     <script type="module" src="js/chat/chat.js"></script>
