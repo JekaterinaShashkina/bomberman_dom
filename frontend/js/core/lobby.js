@@ -1,7 +1,5 @@
 import { timer } from '../utils/timer.js';
 import webSocketService from '../utils/websocket.js';
-import { board } from './const.js';
-import { renderBoard } from './map.js';
 
 document.addEventListener('DOMContentLoaded', function () {
   // Connect to WebSocket
@@ -12,11 +10,12 @@ document.addEventListener('DOMContentLoaded', function () {
   const nicknameInput = document.getElementById('nickname-input');
   const playerCounter = document.getElementById('player-count');
   const countdownElement = document.getElementById('countdown');
+  const elem = document.querySelector('.wait__players');
 
   // When the "Join Game" button is clicked
   joinButton.addEventListener('click', () => {
     if (playerCounter >= 2 && playerCounter < 4) {
-      timer();
+      timer(elem);
     }
     const nickname = nicknameInput.value.trim();
     if (nickname.length === 0) {
@@ -37,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
   webSocketService.addMessageHandler((data) => {
     switch (data.type) {
       case 'update-player-count':
-        playerCounter.innerHTML = `${data.count}/4`;
+        playerCounter.innerHTML = data.count;
         break;
 
       case 'update-countdown':
@@ -46,6 +45,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
       case 'joined-successfully':
         joinButton.innerText = 'Joined! Waiting...';
+        playerID = data.playerID
+        console.log(playerID)
         break;
 
       case 'join-error':

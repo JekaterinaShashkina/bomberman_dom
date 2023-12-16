@@ -1,5 +1,4 @@
-export const timer = () => {
-  const elem = document.querySelector('.wait__players');
+export const timer = (elem) => {
   let timeleft = 20;
 
   const countdown = () => {

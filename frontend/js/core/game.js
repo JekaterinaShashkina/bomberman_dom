@@ -12,13 +12,16 @@ import {
   board,
 } from './const.js';
 import { renderBoard } from './map.js';
+import webSocketService from '../utils/websocket.js';
+
 const DEFAULT_EXPLOSION_RADIUS = 1;
-let lives = document.querySelector('#lives-count');
-let playerPosition = { x: 0, y: 0 };
 const bombs = [];
 const animationDuration = 500; // in milliseconds
 const framesPerSecond = 60;
 const totalFrames = (animationDuration / 1000) * framesPerSecond;
+
+let lives = document.querySelector('#lives-count');
+let playerPosition = { x: 0, y: 0 };
 let animationFrameId;
 let placeBombFlag = false;
 let isBombPlaced = false;
@@ -26,6 +29,7 @@ let playerLives = 3;
 let bombCountPowerUpActive = false;
 let explosionRadius = DEFAULT_EXPLOSION_RADIUS;
 let playerSpeed = 1;
+
 // Initialize the game board
 export const initializeBoard = () => {
   for (let i = 0; i < boardSize; i++) {
