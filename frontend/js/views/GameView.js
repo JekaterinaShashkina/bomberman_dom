@@ -1,4 +1,4 @@
-import GameUI from "../core/gameUI.js"
+import GameUI from "../core/GameUI.js"
 
 export default class GameView {
     constructor() {

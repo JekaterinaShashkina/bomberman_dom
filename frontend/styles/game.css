@@ -7,6 +7,10 @@ body {
   background-color: #f0f0f0;
 }
 
+#game {
+  display: none;
+}
+
 .game-container {
   display: inline-block;
 }

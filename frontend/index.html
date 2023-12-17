@@ -27,7 +27,7 @@
       </section>
     </main>
     
-    <div id="game" style="display: none">
+    <div id="game">
       <main id="game-container">
         <div class="game-board"></div>
         <aside id="game-info">
@@ -41,22 +41,18 @@
           <button id="start-pause">Start</button>
         </aside>
       </main>
-      <section id="chat-container">
-        <div id="messages"></div>
-        <div id="chat-input-container">
-          <form id="chat-form">
-            <input type="text" id="chat-input" placeholder="Type your message..." />
-            <button type="submit" id="send-button">Send</button>
-          </form>
-        </div>
-      </section>
     </div>
+
+    <section id="chat-container">
+      <div id="messages"></div>
+      <div id="chat-input-container">
+        <form id="chat-form">
+          <input type="text" id="chat-input" placeholder="Type your message..." />
+          <button type="submit" id="send-button">Send</button>
+        </form>
+      </div>
+    </section>
   </body>
   <script type="module" src="js/main.js"></script>
-  
-  <script type="module" src="js/core/gameUI.js"></script>
-  <script type="module" src="js/core/player.js"></script>
-  <script type="module" src="js/chat/chat.js"></script>
-  <script type="module" src="js/chat/message.js"></script>
   </html>
   

@@ -56,7 +56,9 @@ const initializeBoard = (boardSize) => {
   }
   // Set player position
   playerPosition = { x: 1, y: 1 };
+  playerPosition2 = { x: 13, y: 1 };
   board[playerPosition.y][playerPosition.x] = PLAYER;
+  board[playerPosition2.y][playerPosition2.x] = PLAYER;
 
   return board;
 };
@@ -67,10 +69,6 @@ app.use(express.static(path.join(frontendDirname, '/')));
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(frontendDirname, 'index.html'));
-});
-
-app.get('/game', (req, res) => {
-  res.sendFile(path.join(frontendDirname, 'game.html'));
 });
 
 const server = http.createServer(app);

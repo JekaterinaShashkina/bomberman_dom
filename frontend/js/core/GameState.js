@@ -1,7 +1,6 @@
 import WebSocketService from '../utils/websocket.js';
-import { renderBoard } from './map.js';
 
-export default class gameUpdates {
+export default class GameState {
     constructor() {
         this.webSocketService = new WebSocketService()
         this.webSocketService.connect()
