@@ -12,7 +12,6 @@ export default class RootViewManager {
     getGameView(startBoard) {
         this.lobbyView.hide()
         this.gameView.show(startBoard)
-        this.showChat()
     }
 
     showChat() {

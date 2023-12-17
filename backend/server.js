@@ -7,9 +7,11 @@ const app = express();
 const PORT = 3000;
 const pathToFrontend = '../frontend'
 const frontendDirname = path.join(__dirname, pathToFrontend)
+const playerPosition = { x: 1, y: 1 };
+const playerPosition2 = { x: 13, y: 1 };
 
 let playerCount = 0;
-const maxPlayers = 1;
+const maxPlayers = 2;
 let countdown = 3;
 const gameState = {
   players: {},
@@ -55,11 +57,8 @@ const initializeBoard = (boardSize) => {
     board.push(row);
   }
   // Set player position
-  playerPosition = { x: 1, y: 1 };
-  playerPosition2 = { x: 13, y: 1 };
   board[playerPosition.y][playerPosition.x] = PLAYER;
   board[playerPosition2.y][playerPosition2.x] = PLAYER;
-
   return board;
 };
 
@@ -113,12 +112,19 @@ wss.on('connection', (ws) => {
           };
           console.log(gameState);
 
+          let startPosition
+          if (playerCount == 1) {
+            startPosition = playerPosition
+          } else if (playerCount == 2) {
+            startPosition = playerPosition2
+          }
+
           wss.broadcast({ type: 'update-player-count', count: playerCount });
           ws.send(
             JSON.stringify({
               type: 'joined-successfully',
               playerID: playerID,
-              gameState: gameState,
+              startPosition: startPosition
             }),
           );
 
@@ -141,13 +147,10 @@ wss.on('connection', (ws) => {
         break;
 
       case 'player-move':
-        // const player = gameState.players[clientData.playerID];
-        // if (player) {
-          // player.position = clientData.position;
           wss.broadcast({
             type: 'player-move',
             playerID: clientData.playerID,
-            position: clientData.position,
+            coordinates: clientData.coordinates,
           });
         // }
         break;

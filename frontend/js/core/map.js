@@ -4,7 +4,6 @@ import {
   BOMB,
   BREAKABLE_WALL,
   WALL,
-  EMPTY,
   EXPLOSION,
   PLAYER,
   POWER_UP_BOMB_COUNT,
@@ -17,8 +16,8 @@ export const renderBoard = () => {
   const gameBoard = document.querySelector('.game-board');
   gameBoard.innerHTML = '';
 
-  for (let i = 0; i < boardSize; i++) {
-    for (let j = 0; j < boardSize; j++) {
+  for (let i = 0; i < board.length; i++) {
+    for (let j = 0; j < board[0].length; j++) {
       const cell = document.createElement('div');
       cell.classList.add('cell');
 

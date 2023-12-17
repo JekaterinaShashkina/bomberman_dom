@@ -1,3 +1,4 @@
+import GameState from './GameState.js';
 import {
   boardSize,
   WALL,
@@ -11,19 +12,15 @@ import {
   POWER_UP_FLAME_COUNT,
   board,
 } from './const.js';
-// import gameUpdates from './gameUpdates.js';
 import { renderBoard } from './map.js';
 
 const DEFAULT_EXPLOSION_RADIUS = 1;
 const bombs = [];
-const animationDuration = 500; // in milliseconds
-const framesPerSecond = 60;
-const totalFrames = (animationDuration / 1000) * framesPerSecond;
-// const update = new gameUpdates()
+const maxBombsCount = 5
+const updateGameState = new GameState()
+export const playerPosition = { x: 1, y: 1 };
 
 let lives = document.querySelector('#lives-count');
-let playerPosition = { x: 1, y: 1 };
-let animationFrameId;
 let placeBombFlag = false;
 let isBombPlaced = false;
 let playerLives = 3;
@@ -42,13 +39,16 @@ const powerUpsTypes = [
   POWER_UP_SPEED_COUNT,
   POWER_UP_FLAME_COUNT,
 ];
+
 const powerUps = [];
+
 const getRandomPowerUpType = () => {
   const selectedPowerUp =
     powerUpsTypes[Math.floor(Math.random() * powerUpsTypes.length)];
   console.log('Selected Power-Up:', selectedPowerUp);
   return selectedPowerUp;
 };
+
 const placePowerUp = (x, y) => {
   if (board[y][x] === EMPTY) {
     board[y][x] = getRandomPowerUpType();
@@ -75,13 +75,13 @@ const collectPowerUp = () => {
     }
   }
 };
-let powerUpStartTime; // Время начала действия усилителя
+
 const applyPowerUpEffect = (powerUpType) => {
   switch (powerUpType) {
     case POWER_UP_BOMB_COUNT:
       console.log('Bomb count +');
       bombCountPowerUpActive = true;
-      powerUpStartTime = performance.now();
+      const powerUpStartTime = performance.now();
       const updateBombCountEffect = (timestamp) => {
         const elapsedTime = timestamp - powerUpStartTime;
         if (elapsedTime < 30000) {
@@ -125,61 +125,50 @@ const applyPowerUpEffect = (powerUpType) => {
     // Add more cases for other power-up types if needed
   }
 };
-const animateStep = (startTime, startX, startY, endX, endY) => {
-  const currentTime = Date.now();
-  const progress = (currentTime - startTime) / animationDuration;
-  const deltaX = (endX - startX) / totalFrames;
-  const deltaY = (endY - startY) / totalFrames;
 
-  if (progress < 1) {
-    const interpolatedX = startX + progress * deltaX * playerSpeed;
-    const interpolatedY = startY + progress * deltaY * playerSpeed;
+const gameLoop = () => {
+  renderBoard()
+  requestAnimationFrame(gameLoop)
+}
 
-    const roundedX = Math.round(interpolatedX);
-    const roundedY = Math.round(interpolatedY);
+gameLoop()
 
-    if (board[roundedY][roundedX] !== BOMB) {
-      board[roundedY][roundedX] = EMPTY;
-    }
+const animateStep = (startX, startY, endX, endY) => {
 
-    playerPosition.x = interpolatedX;
-    playerPosition.y = interpolatedY;
+  renderBoard();
+  if (placeBombFlag) {
+    placeBomb();
+    placeBombFlag = false;
+  }
 
-    renderBoard();
-    if (placeBombFlag) {
-      placeBomb();
-      placeBombFlag = false;
-    }
+  if (
+    board[endY][endX] !== WALL &&
+    board[endY][endX] !== BREAKABLE_WALL &&
+    board[endY][endX] !== BOMB
+  ) {
+    playerPosition.x = endX;
+    playerPosition.y = endY;
 
-    // Запустить следующий шаг анимации
-    requestAnimationFrame((newTime) =>
-      animateStep(newTime, startX, startY, endX, endY),
-    );
-  } else {
-    // Finish animation and update player position
-    const roundedX = Math.round(endX);
-    const roundedY = Math.round(endY);
-
-    if (
-      board[roundedY][roundedX] !== WALL &&
-      board[roundedY][roundedX] !== BREAKABLE_WALL &&
-      board[roundedY][roundedX] !== BOMB
-    ) {
-      playerPosition.x = roundedX;
-      playerPosition.y = roundedY;
-      board[roundedY][roundedX] = PLAYER;
-    }
-
-    // update.movePlayer({y: roundedY, x: roundedX})
-    renderBoard();
+    updateGameState.movePlayer({
+      startX: startX,
+      startY: startY,
+      endX: endX,
+      endY: endY
+    })
   }
 };
+
+export const movePlayer = (startX, startY, endX, endY) => {
+  if (board[startY][startX] !== BOMB) {
+    board[startY][startX] = EMPTY;
+  }
+
+  board[endY][endX] = PLAYER;
+}
 
 export const handlePlayerMovement = (key) => {
   let newX = playerPosition.x;
   let newY = playerPosition.y;
-  console.log(key)
-  // console.log(key);
   if (key === 'ArrowUp' && playerPosition.y > 0) {
     newY -= 1;
   } else if (key === 'ArrowDown' && playerPosition.y < boardSize - 1) {
@@ -194,15 +183,13 @@ export const handlePlayerMovement = (key) => {
   }
 
   // New position move avalaibility control
-  if (board[newY][newX] !== WALL && board[newY][newX] !== BREAKABLE_WALL) {
-    const startTime = Date.now();
+  if (board[newY][newX] !== WALL && board[newY][newX] !== BREAKABLE_WALL
+    && board[newY][newX] !== BOMB && board[newY][newX] !== PLAYER) {
     const startX = playerPosition.x;
     const startY = playerPosition.y;
 
     // Animation start
-    animationFrameId = requestAnimationFrame(() =>
-      animateStep(startTime, startX, startY, newX, newY),
-    );
+    animateStep(startX, startY, newX, newY)
     // Collect power-ups
     collectPowerUp();
   }
@@ -211,7 +198,7 @@ export const handlePlayerMovement = (key) => {
 const placeBomb = () => {
   if (
     (!isBombPlaced && !bombCountPowerUpActive) ||
-    (bombCountPowerUpActive && bombs.length < 2)
+    (bombCountPowerUpActive && bombs.length < maxBombsCount)
   ) {
     const currentPlayerX = playerPosition.x;
     const currentPlayerY = playerPosition.y;

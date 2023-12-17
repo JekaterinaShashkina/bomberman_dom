@@ -1,14 +1,15 @@
 import { timer } from '../utils/timer.js';
 import WebSocketService from '../utils/websocket.js';
+import { playerPosition } from '../core/game.js';
 
 export default class LobbyView {
     constructor(RootViewManager) {
         this.RootViewManager = RootViewManager
-        this.lobby = document.getElementById("lobby-container")
-
+        
         this.webSocketService = new WebSocketService()
         this.webSocketService.connect();
-
+        
+        this.lobby = document.getElementById("lobby-container")
         this.joinButton = document.getElementById('join-button');
         this.nicknameInput = document.getElementById('nickname-input');
         this.playerCounter = document.getElementById('player-count');
@@ -67,6 +68,10 @@ export default class LobbyView {
 
                 case 'joined-successfully':
                     this.joinButton.innerText = 'Joined! Waiting...';
+                    this.RootViewManager.showChat()
+                    const startPosition = data.startPosition
+                    playerPosition.x = startPosition.x
+                    playerPosition.y = startPosition.y
                     break;
 
                 case 'join-error':

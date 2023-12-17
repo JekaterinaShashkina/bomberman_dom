@@ -1,4 +1,5 @@
 import WebSocketService from '../utils/websocket.js';
+import { movePlayer } from './game.js';
 
 export default class GameState {
     constructor() {
@@ -14,11 +15,10 @@ export default class GameState {
         this.playerID = 1
     }
 
-    movePlayer(newPosition) {
+    movePlayer(data) {
         this.webSocketService.send({
             type: 'player-move',
-            playerID: this.playerID,
-            position: newPosition,
+            coordinates: data,
         });
     }
 
@@ -41,8 +41,13 @@ export default class GameState {
                 displayChatMessage(data.sender, data.text);
                 break;
             case 'player-move':
-                console.log(data)
-                movePlayer(data.playerId, data.newPosition);
+                const coordinates = data.coordinates
+                console.log(coordinates)
+                movePlayer(
+                    coordinates.startX,
+                    coordinates.startY,
+                    coordinates.endX,
+                    coordinates.endY)
                 break;
             case 'place-bomb':
                 placeBombOnMap(data.position);
