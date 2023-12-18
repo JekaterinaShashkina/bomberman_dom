@@ -5,10 +5,10 @@ import { playerPosition } from '../core/game.js';
 export default class LobbyView {
     constructor(RootViewManager) {
         this.RootViewManager = RootViewManager
-        
+
         this.webSocketService = new WebSocketService()
         this.webSocketService.connect();
-        
+
         this.lobby = document.getElementById("lobby-container")
         this.joinButton = document.getElementById('join-button');
         this.nicknameInput = document.getElementById('nickname-input');

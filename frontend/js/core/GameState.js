@@ -11,8 +11,6 @@ export default class GameState {
         this.bombCount = document.getElementById('bomb-count');
         this.flameCount = document.getElementById('flame-count');
         this.speedLevel = document.getElementById('speed-level');
-
-        this.playerID = 1
     }
 
     movePlayer(data) {
@@ -42,7 +40,6 @@ export default class GameState {
                 break;
             case 'player-move':
                 const coordinates = data.coordinates
-                console.log(coordinates)
                 movePlayer(
                     coordinates.startX,
                     coordinates.startY,
