@@ -11,3 +11,6 @@ export const BREAKABLE_WALL = 5;
 export const POWER_UP_BOMB_COUNT = 6
 export const POWER_UP_SPEED_COUNT = 7
 export const POWER_UP_FLAME_COUNT = 8
+export const DEFAULT_EXPLOSION_RADIUS = 1
+export const DEFAULT_PLAYER_SPEED = 1
+export const MAX_BOMBS_COUNT = 3

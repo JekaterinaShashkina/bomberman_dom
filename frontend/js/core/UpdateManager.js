@@ -1,11 +1,11 @@
 import WebSocketService from '../utils/websocket.js';
-import { movePlayer } from './game.js';
 
-export default class GameState {
-    constructor() {
+export default class UpdateManager {
+    constructor(GameCore) {
+        this.gameCore = GameCore
         this.webSocketService = new WebSocketService()
         this.webSocketService.connect()
-        this.webSocketService.addMessageHandler(this.handleWebSocketMessage);
+        this.webSocketService.addMessageHandler(this.handleWebSocketMessage.bind(this));
 
         this.livesCount = document.getElementById('lives-count');
         this.bombCount = document.getElementById('bomb-count');
@@ -35,12 +35,9 @@ export default class GameState {
             case 'update-speed':
                 this.speedLevel.innerText = data.speed;
                 break;
-            case 'chat-message':
-                displayChatMessage(data.sender, data.text);
-                break;
             case 'player-move':
                 const coordinates = data.coordinates
-                movePlayer(
+                this.gameCore.movePlayer(
                     coordinates.startX,
                     coordinates.startY,
                     coordinates.endX,

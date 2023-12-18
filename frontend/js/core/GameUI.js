@@ -1,8 +1,7 @@
-import { renderBoard } from './map.js';
-import { handlePlayerMovement, setBoard } from './game.js';
+import GameCore from './GameCore.js';
 
 export default class GameUI {
-  constructor(startBoard) {
+  constructor(gameSetup) {
     // DOM Elements
     this.mapSection = document.getElementById('map');
     this.gameContainer = document.getElementById('game-container');
@@ -10,25 +9,15 @@ export default class GameUI {
     this.sendButton = document.getElementById('send-button');
     this.messagesDiv = document.getElementById('messages');
 
-    // Initialize game elements
-    this.initGame(startBoard)
-
     // Event listeners
     this.sendButton.addEventListener('click', this.sendChatMessage);
+
+    this.gameCore = new GameCore(gameSetup)
 
     // Handle keydown
     window.addEventListener('keydown', (event) => {
       const { key } = event;
-      handlePlayerMovement(key);
+      this.gameCore.handlePlayerMovement(key);
     });
-  }
-
-  initGame(startBoard) {
-    setBoard(startBoard)
-    renderBoard();
-  }
-
-  handleGameEnd() {
-    stopGame();
   }
 }

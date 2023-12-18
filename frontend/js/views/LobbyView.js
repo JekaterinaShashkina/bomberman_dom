@@ -1,10 +1,10 @@
 import { timer } from '../utils/timer.js';
 import WebSocketService from '../utils/websocket.js';
-import { playerPosition } from '../core/game.js';
 
 export default class LobbyView {
     constructor(RootViewManager) {
         this.RootViewManager = RootViewManager
+        this.nickname = ""
 
         this.webSocketService = new WebSocketService()
         this.webSocketService.connect();
@@ -28,8 +28,8 @@ export default class LobbyView {
         this.lobby.style.display = "none"
     }
 
-    getGameView(startBoard) {
-        this.RootViewManager.getGameView(startBoard)
+    getGameView(gameSetup) {
+        this.RootViewManager.getGameView(gameSetup)
     }
 
     setJoinButtonListener() {
@@ -39,6 +39,7 @@ export default class LobbyView {
                 timer(this.elem);
             }
             const nickname = this.nicknameInput.value.trim();
+            this.nickname = nickname
             if (nickname.length === 0) {
                 alert('Please enter a nickname!');
                 return;
@@ -51,6 +52,8 @@ export default class LobbyView {
 
             this.joinButton.disabled = true;
             this.joinButton.innerText = 'Joining...';
+
+            this.gameSetup = {}
         });
     }
 
@@ -68,10 +71,10 @@ export default class LobbyView {
 
                 case 'joined-successfully':
                     this.joinButton.innerText = 'Joined! Waiting...';
-                    this.RootViewManager.showChat()
-                    const startPosition = data.startPosition
-                    playerPosition.x = startPosition.x
-                    playerPosition.y = startPosition.y
+                    console.log(this)
+                    console.log(this.nickname)
+                    this.RootViewManager.showChat(this.nickname)
+                    this.gameSetup.startPosition = data.startPosition
                     break;
 
                 case 'join-error':
@@ -81,8 +84,8 @@ export default class LobbyView {
                     break;
 
                 case 'game-start':
-                    const startBoard = data.map;
-                    this.getGameView(startBoard)
+                    this.gameSetup.startBoard = data.map;
+                    this.getGameView(this.gameSetup)
                     break;
             }
         });

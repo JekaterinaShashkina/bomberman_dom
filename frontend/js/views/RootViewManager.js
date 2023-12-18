@@ -6,15 +6,16 @@ export default class RootViewManager {
     constructor() {
         this.lobbyView = new LobbyView(this)
         this.gameView = new GameView()
-        this.chat = new Chat()
     }
 
-    getGameView(startBoard) {
+    getGameView(gameSetup) {
         this.lobbyView.hide()
-        this.gameView.show(startBoard)
+        this.gameView.show(gameSetup)
     }
 
-    showChat() {
+    showChat(nickname) {
+        console.log(nickname)
+        this.chat = new Chat(nickname)
         this.chat.show()
     }
 }

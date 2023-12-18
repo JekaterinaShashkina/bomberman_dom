@@ -6,9 +6,9 @@ export default class GameView {
         this.gameUI = null
     }
 
-    show(startBoard) {
+    show(gameSetup) {
         this.game.style.display = "block"
-        this.gameUI = new GameUI(startBoard)
+        this.gameUI = new GameUI(gameSetup)
     }
 
     hide() {

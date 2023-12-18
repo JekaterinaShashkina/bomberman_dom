@@ -11,7 +11,7 @@ const playerPosition = { x: 1, y: 1 };
 const playerPosition2 = { x: 13, y: 1 };
 
 let playerCount = 0;
-const maxPlayers = 2;
+const maxPlayers = 1;
 let countdown = 3;
 const gameState = {
   players: {},
@@ -165,26 +165,7 @@ wss.on('connection', (ws) => {
         break;
 
       case 'chat-message':
-        const serverNickname = gameState.players.nickname;
-
-        // This ensures the sender sees their own message.
-        ws.send(
-          JSON.stringify({
-            type: 'chat-message',
-            text: clientData.text,
-            sender: serverNickname,
-          }),
-        );
-
-        // Broadcast to other clients
-        wss.broadcast(
-          {
-            type: 'chat-message',
-            text: clientData.text,
-            sender: serverNickname,
-          },
-          ws,
-        );
+        wss.broadcast(clientData);
         break;
     }
   });

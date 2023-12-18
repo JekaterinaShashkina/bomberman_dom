@@ -3,6 +3,7 @@ class Message {
         this.sender = sender;   // Nickname of the sender
         this.content = content; // Message content
         this.timestamp = new Date().toISOString(); // Timestamp when the message was sent
+        this.type = 'chat-message'
     }
 }
 
