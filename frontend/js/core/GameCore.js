@@ -13,6 +13,7 @@ import {
   DEFAULT_EXPLOSION_RADIUS,
   DEFAULT_PLAYER_SPEED,
   MAX_BOMBS_COUNT,
+  POWER_UP_DURATION,
   board,
 } from './const.js';
 import { renderBoard } from './map.js';
@@ -31,7 +32,7 @@ export default class GameCore {
     this.playerLives = 3;
     this.bombCountPowerUpActive = false;
     this.explosionRadius = DEFAULT_EXPLOSION_RADIUS;
-    this.playerSpeed = 1;
+    this.playerSpeed = DEFAULT_PLAYER_SPEED;
 
     this.powerUpsTypes = [
       POWER_UP_BOMB_COUNT,
@@ -47,8 +48,77 @@ export default class GameCore {
       { x: 1, y: 0 },
       { x: -1, y: 0 },
     ];
+    this.currentKey
+    this.blockMovement = false
 
-    this.gameLoop()
+    renderBoard()
+    requestAnimationFrame(this.playerMovementLoop)
+  }
+
+  handleKeyPress = (key) => {
+    if (key === ' ') {
+      // If space is pressed, set the flag to place a bomb
+      this.placeBomb();
+    } else if (key === 'ArrowUp' || key === 'ArrowDown'
+      || key === 'ArrowLeft' || key === 'ArrowRight') {
+      this.currentKey = key
+    } else {
+      this.currentKey = ''
+    }
+  };
+
+  resetCurrentKey = () => {
+    this.currentKey = ''
+  }
+
+  playerMovementLoop = () => {
+    const startX = this.playerPosition.x
+    const startY = this.playerPosition.y
+    let newX = startX;
+    let newY = startY;
+
+    if (this.currentKey === 'ArrowUp' && startY > 1) {
+      newY -= 1;
+    } else if (this.currentKey === 'ArrowDown' && startY < boardSize - 1) {
+      newY += 1;
+    } else if (this.currentKey === 'ArrowLeft' && startX > 1) {
+      newX -= 1;
+    } else if (this.currentKey === 'ArrowRight' && startX < boardSize - 1) {
+      newX += 1;
+    }
+
+    // New position move avalaibility control
+    if (board[newY][newX] !== WALL && board[newY][newX] !== BREAKABLE_WALL
+      && board[newY][newX] !== BOMB && board[newY][newX] !== PLAYER
+      && !this.blockMovement) {
+
+      // Handle player movement delay
+      this.blockMovement = true
+      setTimeout(() => {
+        this.blockMovement = false
+      }, 200 / this.playerSpeed)
+
+      this.playerPosition.x = newX
+      this.playerPosition.y = newY
+
+      this.updateGameState.movePlayer({
+        startX: startX,
+        startY: startY,
+        newX: newX, 
+        newY: newY})
+      this.collectPowerUp();
+    }
+
+    requestAnimationFrame(this.playerMovementLoop)
+  }
+
+  movePlayer = (startX, startY, endX, endY) => {
+    if (board[startY][startX] !== BOMB) {
+      board[startY][startX] = EMPTY;
+    }
+
+    board[endY][endX] = PLAYER;
+    renderBoard()
   }
 
   setBoard = (startBoard) => {
@@ -60,7 +130,7 @@ export default class GameCore {
 
   getRandomPowerUpType = () => {
     const selectedPowerUp =
-    this.powerUpsTypes[Math.floor(Math.random() * this.powerUpsTypes.length)];
+      this.powerUpsTypes[Math.floor(Math.random() * this.powerUpsTypes.length)];
     console.log('Selected Power-Up:', selectedPowerUp);
     return selectedPowerUp;
   };
@@ -75,8 +145,8 @@ export default class GameCore {
   };
 
   collectPowerUp = () => {
-    const currentPlayerX = Math.round(this.playerPosition.x);
-    const currentPlayerY = Math.round(this.playerPosition.y);
+    const currentPlayerX = this.playerPosition.x;
+    const currentPlayerY = this.playerPosition.y;
 
     for (let i = 0; i < this.powerUps.length; i++) {
       const powerUp = this.powerUps[i];
@@ -110,17 +180,8 @@ export default class GameCore {
         break;
       case POWER_UP_SPEED_COUNT:
         console.log('speed up');
-        this.playerSpeed = 4;
-        const speedEffectStartTime = performance.now();
-        const updateSpeedEffect = (timestamp) => {
-          const elapsedTime = timestamp - speedEffectStartTime;
-          if (elapsedTime < 30000) {
-            requestAnimationFrame(updateSpeedEffect);
-          } else {
-            this.playerSpeed = DEFAULT_PLAYER_SPEED;
-          }
-        };
-        requestAnimationFrame(updateSpeedEffect);
+        this.playerSpeed++;
+        setTimeout(() => this.playerSpeed--, POWER_UP_DURATION)
         break;
       case POWER_UP_FLAME_COUNT:
         console.log('flame increase');
@@ -140,75 +201,6 @@ export default class GameCore {
       // Add more cases for other power-up types if needed
     }
   };
-
-  gameLoop = () => {
-    renderBoard()
-    requestAnimationFrame(this.gameLoop)
-  }
-
-  handlePlayerMovement = (key) => {
-    const currentX = this.playerPosition.x
-    const currentY = this.playerPosition.y
-    let newX = currentX;
-    let newY = currentY;
-    if (key === 'ArrowUp' && currentY > 0) {
-      newY -= 1;
-    } else if (key === 'ArrowDown' && currentY < boardSize - 1) {
-      newY += 1;
-    } else if (key === 'ArrowLeft' && currentX > 0) {
-      newX -= 1;
-    } else if (key === 'ArrowRight' && currentX < boardSize - 1) {
-      newX += 1;
-    } else if (key === ' ') {
-      // If space is pressed, set the flag to place a bomb
-      this.placeBombFlag = true;
-    }
-
-    // New position move avalaibility control
-    if (board[newY][newX] !== WALL && board[newY][newX] !== BREAKABLE_WALL
-      && board[newY][newX] !== BOMB && board[newY][newX] !== PLAYER) {
-      const startX = currentX;
-      const startY = currentY;
-
-      // Animation start
-      this.animateStep(startX, startY, newX, newY)
-      // Collect power-ups
-      this.collectPowerUp();
-    }
-  };
-
-  animateStep = (startX, startY, endX, endY) => {
-
-    renderBoard();
-    if (this.placeBombFlag) {
-      this.placeBomb();
-      this.placeBombFlag = false;
-    }
-
-    if (
-      board[endY][endX] !== WALL &&
-      board[endY][endX] !== BREAKABLE_WALL &&
-      board[endY][endX] !== BOMB
-    ) {
-      this.playerPosition.x = endX;
-      this.playerPosition.y = endY;
-
-      this.updateGameState.movePlayer({
-        startX: startX,
-        startY: startY,
-        endX: endX,
-        endY: endY
-      })
-    }
-  };
-
-  movePlayer = (startX, startY, endX, endY) => {
-    if (board[startY][startX] !== BOMB) {
-      board[startY][startX] = EMPTY;
-    }
-
-    board[endY][endX] = PLAYER;
-  }
 
   placeBomb = () => {
     if (
@@ -247,8 +239,7 @@ export default class GameCore {
           }
           // Check if player is in the explosion area
           if (targetX === this.playerPosition.x && targetY === this.playerPosition.y) {
-            this.playerDies(); // Вызываем функцию обработки смерти
-            // return;
+            this.playerDies(); // Handle player death
           }
           if (board[targetY][targetX] === BREAKABLE_WALL) {
             if (Math.random() < 0.3) {

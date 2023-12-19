@@ -16,7 +16,6 @@ export default class Chat {
         });
 
         this.webSocketService.addMessageHandler(data => {
-            console.log('Received data from server:', data);
             if (data.type === 'chat-message') {
                 this.displayMessage(data.sender, data.content);
             }

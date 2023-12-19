@@ -40,8 +40,8 @@ export default class UpdateManager {
                 this.gameCore.movePlayer(
                     coordinates.startX,
                     coordinates.startY,
-                    coordinates.endX,
-                    coordinates.endY)
+                    coordinates.newX,
+                    coordinates.newY)
                 break;
             case 'place-bomb':
                 placeBombOnMap(data.position);

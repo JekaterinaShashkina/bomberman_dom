@@ -1,68 +1,25 @@
-const express = require('express');
-const path = require('path');
-const http = require('http');
-const WebSocket = require('ws');
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import http from 'http';
+import { WebSocketServer, WebSocket } from 'ws';
+import { initializeBoard } from './js/map/map.js';
+import { PLAYER_POSITIONS } from './js/core/const.js';
 
 const app = express();
 const PORT = 3000;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename)
 const pathToFrontend = '../frontend'
 const frontendDirname = path.join(__dirname, pathToFrontend)
-const playerPosition = { x: 1, y: 1 };
-const playerPosition2 = { x: 13, y: 1 };
 
-let playerCount = 0;
+export let playerCount = 0;
 const maxPlayers = 1;
 let countdown = 3;
 const gameState = {
   players: {},
   bombs: [],
 };
-const board = []; // 2D array to represent the game board
-// Constants for cell types
-const EMPTY = 0;
-const WALL = 1;
-const PLAYER = 2;
-const BOMB = 3;
-const EXPLOSION = 4;
-const BREAKABLE_WALL = 5;
-const POWER_UP_BOMB_COUNT = 6
-const POWER_UP_SPEED_COUNT = 7
-const POWER_UP_FLAME_COUNT = 8
-
-const initializeBoard = (boardSize) => {
-  for (let i = 0; i < boardSize; i++) {
-    const row = [];
-    for (let j = 0; j < boardSize; j++) {
-      // Add walls on the borders and at even cells
-      if (
-        i === 0 ||
-        i === boardSize - 1 ||
-        j === 0 ||
-        j === boardSize - 1 ||
-        (i % 2 === 0 && j % 2 === 0)
-        // Math.random() < 0.2
-      ) {
-        row.push(WALL);
-      } else if (
-        i % 2 === 1 &&
-        j % 2 === 1 &&
-        !(i === 1 && j === 1) &&
-        Math.random() < 0.4
-      ) {
-        row.push(BREAKABLE_WALL);
-      } else {
-        row.push(EMPTY);
-      }
-    }
-    board.push(row);
-  }
-  // Set player position
-  board[playerPosition.y][playerPosition.x] = PLAYER;
-  board[playerPosition2.y][playerPosition2.x] = PLAYER;
-  return board;
-};
-
-const map = initializeBoard(15);
 
 app.use(express.static(path.join(frontendDirname, '/')));
 
@@ -71,7 +28,7 @@ app.get('/', (req, res) => {
 });
 
 const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
+const wss = new WebSocketServer({ server });
 
 let countdownInterval;
 
@@ -85,8 +42,6 @@ wss.broadcast = (data, excludeClient) => {
 
 wss.on('connection', (ws) => {
   ws.on('message', (message) => {
-    console.log('Raw received message:', message);
-    console.log('String version of message:', message.toString());
 
     let clientData;
     try {
@@ -97,7 +52,6 @@ wss.on('connection', (ws) => {
       return;
     }
 
-    console.log(clientData)
     switch (clientData.type) {
       //... [your other case handlers]
       case 'join-game':
@@ -112,19 +66,12 @@ wss.on('connection', (ws) => {
           };
           console.log(gameState);
 
-          let startPosition
-          if (playerCount == 1) {
-            startPosition = playerPosition
-          } else if (playerCount == 2) {
-            startPosition = playerPosition2
-          }
-
           wss.broadcast({ type: 'update-player-count', count: playerCount });
           ws.send(
             JSON.stringify({
               type: 'joined-successfully',
               playerID: playerID,
-              startPosition: startPosition
+              startPosition: PLAYER_POSITIONS[playerCount]
             }),
           );
 
@@ -135,6 +82,7 @@ wss.on('connection', (ws) => {
 
               if (countdown <= 0) {
                 clearInterval(countdownInterval);
+                const map = initializeBoard(playerCount);
                 wss.broadcast({ type: 'game-start', map: map });
               }
             }, 1000);
@@ -147,11 +95,11 @@ wss.on('connection', (ws) => {
         break;
 
       case 'player-move':
-          wss.broadcast({
-            type: 'player-move',
-            playerID: clientData.playerID,
-            coordinates: clientData.coordinates,
-          });
+        wss.broadcast({
+          type: 'player-move',
+          playerID: clientData.playerID,
+          coordinates: clientData.coordinates,
+        });
         // }
         break;
 

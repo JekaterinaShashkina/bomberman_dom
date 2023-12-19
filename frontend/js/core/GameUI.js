@@ -17,7 +17,12 @@ export default class GameUI {
     // Handle keydown
     window.addEventListener('keydown', (event) => {
       const { key } = event;
-      this.gameCore.handlePlayerMovement(key);
+      this.gameCore.handleKeyPress(key);
+    });
+
+    // Handle keyup
+    window.addEventListener('keyup', () => {
+      this.gameCore.resetCurrentKey()
     });
   }
 }

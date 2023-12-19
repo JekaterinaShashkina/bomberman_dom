@@ -14,3 +14,4 @@ export const POWER_UP_FLAME_COUNT = 8
 export const DEFAULT_EXPLOSION_RADIUS = 1
 export const DEFAULT_PLAYER_SPEED = 1
 export const MAX_BOMBS_COUNT = 3
+export const POWER_UP_DURATION = 30 * 1000
