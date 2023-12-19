@@ -3,16 +3,12 @@ import GameCore from './GameCore.js';
 export default class GameUI {
   constructor(gameSetup) {
     // DOM Elements
-    this.mapSection = document.getElementById('map');
-    this.gameContainer = document.getElementById('game-container');
-    this.chatInput = document.getElementById('chat-input');
-    this.sendButton = document.getElementById('send-button');
-    this.messagesDiv = document.getElementById('messages');
+    this.livesCount = document.getElementById('lives-count');
+    this.bombCount = document.getElementById('bomb-count');
+    this.flameCount = document.getElementById('flame-count');
+    this.speedLevel = document.getElementById('speed-level');
 
-    // Event listeners
-    this.sendButton.addEventListener('click', this.sendChatMessage);
-
-    this.gameCore = new GameCore(gameSetup)
+    this.gameCore = new GameCore(this, gameSetup)
 
     // Handle keydown
     window.addEventListener('keydown', (event) => {
@@ -24,5 +20,21 @@ export default class GameUI {
     window.addEventListener('keyup', () => {
       this.gameCore.resetCurrentKey()
     });
+  }
+
+  updatedLives(count) {
+    this.livesCount.innerText = count
+  }
+
+  updatedBombCount(count) {
+    this.bombCount.innerText = count
+  }
+
+  updatedFlameCount(count) {
+    this.flameCount.innerText = count
+  }
+
+  updatedSpeedLevel(count) {
+    this.speedLevel.innerText = count
   }
 }

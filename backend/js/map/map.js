@@ -4,8 +4,8 @@ import {
     BREAKABLE_WALL,
     PLAYER,
     boardSize,
-} from '../../../frontend/js/core/const.js';
-import { PLAYER_POSITIONS } from '../core/const.js';
+    PLAYER_POSITIONS,
+} from '../../../frontend/const.js';
 
 const board = [];
 
@@ -20,7 +20,6 @@ export const initializeBoard = (playerCount) => {
                 j === 0 ||
                 j === boardSize - 1 ||
                 (i % 2 === 0 && j % 2 === 0)
-                // Math.random() < 0.2
             ) {
                 row.push(WALL);
             } else if (
@@ -43,6 +42,6 @@ export const initializeBoard = (playerCount) => {
             board[value.y][value.x] = PLAYER;
         }
     }
-    
+
     return board;
 };

@@ -1,4 +1,4 @@
-import WebSocketService from '../utils/websocket.js';
+import WebSocketService from '../utils/Websocket.js';
 import { Message } from './Message.js';
 
 export default class Chat {
@@ -40,7 +40,6 @@ export default class Chat {
 
         if (messageContent) {
             const message = new Message(nickname, messageContent)
-
             this.webSocketService.send(message);
             this.chatInput.value = '';
         }

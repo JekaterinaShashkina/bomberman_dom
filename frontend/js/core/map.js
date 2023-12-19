@@ -1,15 +1,15 @@
 import {
   board,
-  boardSize,
   BOMB,
   BREAKABLE_WALL,
   WALL,
   EXPLOSION,
   PLAYER,
-  POWER_UP_BOMB_COUNT,
-  POWER_UP_SPEED_COUNT,
-  POWER_UP_FLAME_COUNT,
-} from './const.js ';
+  POWER_UP_BOMB,
+  POWER_UP_SPEED,
+  POWER_UP_FLAME,
+  EXPLOSION_BREAKABLE_WALL,
+} from '../../const.js';
 
 // Render the game board
 export const renderBoard = () => {
@@ -27,13 +27,13 @@ export const renderBoard = () => {
         cell.classList.add('player');
       } else if (board[i][j] === BOMB) {
         cell.classList.add('bomb');
-      } else if (board[i][j] === EXPLOSION) {
+      } else if (board[i][j] === EXPLOSION || board[i][j] === EXPLOSION_BREAKABLE_WALL) {
         cell.classList.add('explosion');
-      } else if (board[i][j] === POWER_UP_BOMB_COUNT) {
+      } else if (board[i][j] === POWER_UP_BOMB) {
         cell.classList.add('power-up-bomb-count');
-      } else if (board[i][j] === POWER_UP_SPEED_COUNT) {
+      } else if (board[i][j] === POWER_UP_SPEED) {
         cell.classList.add('power-up-speed-count');
-      } else if (board[i][j] === POWER_UP_FLAME_COUNT) {
+      } else if (board[i][j] === POWER_UP_FLAME) {
         cell.classList.add('power-up-flame-count');
       } else if (board[i][j] === BREAKABLE_WALL) {
         cell.classList.add('breakable-wall');

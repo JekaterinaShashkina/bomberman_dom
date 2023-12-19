@@ -1,11 +1,12 @@
 const WEBSOCKET_SERVER_URL = 'ws://localhost:3000';
 
 export default class WebSocketService {
+    reconnectDelay = 5000;
+    maximumReconnectAttempts = 5;
+
     constructor() {
         this.socket = null;
         this.messageHandlers = [];
-        this.reconnectDelay = 5000;
-        this.maximumReconnectAttempts = 5;
         this.currentReconnectAttempts = 0;
         this.messageQueue = [];
     }
@@ -67,7 +68,7 @@ export default class WebSocketService {
         this.messageHandlers = this.messageHandlers.filter(h => h !== handler);
     }
 
-  
+
     send(data) {
         try {
             if (this.isConnected()) {
@@ -80,7 +81,7 @@ export default class WebSocketService {
             console.error('Error sending WebSocket message:', error);
         }
     }
-    
+
     close() {
         if (this.socket) {
             this.socket.close();

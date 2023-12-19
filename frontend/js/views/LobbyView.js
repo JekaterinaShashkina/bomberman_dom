@@ -1,5 +1,5 @@
 import { timer } from '../utils/timer.js';
-import WebSocketService from '../utils/websocket.js';
+import WebSocketService from '../utils/Websocket.js';
 
 export default class LobbyView {
     constructor(RootViewManager) {
