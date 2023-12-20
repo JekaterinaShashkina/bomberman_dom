@@ -15,7 +15,7 @@ const pathToFrontend = '../frontend'
 const frontendDirPath = path.join(__dirname, pathToFrontend)
 
 let serverGameCore
-const MAX_PLAYERS = 2
+const MAX_PLAYERS = 1
 let countdown = 1;
 let playerCount = 0;
 

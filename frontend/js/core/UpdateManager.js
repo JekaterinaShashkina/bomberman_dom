@@ -30,11 +30,7 @@ export default class UpdateManager {
     }
 
     handleWebSocketMessage(data) {
-        console.log('Received WS message:', data);
         switch (data.type) {
-            case 'place-bomb':
-                placeBombOnMap(data.position);
-                break;
             case 'update-game':
                 this.gameCore.updateBoard(data.board)
         }

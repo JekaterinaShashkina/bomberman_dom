@@ -25,5 +25,5 @@ export const DEFAULT_PLAYER_SPEED = 1
 export const MAX_BOMBS_COUNT = 3
 export const MAX_PLAYER_SPEED = 3
 export const POWER_UP_DURATION = 30 * 1000
-export const PLAYER_LIVES = 1
+export const PLAYER_LIVES = 3
 export const BOMB_EXPLOSION_DELAY = 3 * 1000

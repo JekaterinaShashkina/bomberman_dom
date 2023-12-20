@@ -126,7 +126,7 @@ export default class ServerGameCore {
                         break;
                     }
 
-                    if (board[targetY][targetX] === EXPLOSION_BREAKABLE_WALL && Math.random() < 1) {
+                    if (board[targetY][targetX] === EXPLOSION_BREAKABLE_WALL && Math.random() < 0.3) {
                         board[targetY][targetX] = this.getRandomPowerUpType();
                     } else {
                         board[targetY][targetX] = EMPTY
