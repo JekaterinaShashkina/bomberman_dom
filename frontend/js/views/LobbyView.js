@@ -6,6 +6,7 @@ export default class LobbyView {
     constructor(RootViewManager) {
         this.RootViewManager = RootViewManager
         this.nickname = ""
+        this.gameSetup = {}
 
         this.webSocketService = new WebSocketService()
         this.webSocketService.connect();
@@ -54,8 +55,6 @@ export default class LobbyView {
 
             this.joinButton.disabled = true;
             this.joinButton.innerText = 'Joining...';
-
-            this.gameSetup = {}
         });
     }
 
@@ -73,8 +72,6 @@ export default class LobbyView {
 
                 case 'joined-successfully':
                     this.joinButton.innerText = 'Joined! Waiting...';
-                    console.log(this)
-                    console.log(this.nickname)
                     this.RootViewManager.showChat(this.nickname)
                     this.gameSetup.startPosition = data.startPosition
                     break;
@@ -93,9 +90,7 @@ export default class LobbyView {
         });
     }
 
-    createLobbyElemenets(app) {
-        console.log(app)
-
+    createLobbyElemenets(container) {
         const joinButton = frame.createButton({
             id: "join-button"
         }, "Join Game")
@@ -129,7 +124,7 @@ export default class LobbyView {
             class: "wait__players"
         })
 
-        app.append(
+        container.append(
             frame.createH1({}, "Welcome to Bomberman-DOM"),
             frame.createSection({
                 id: "nickname-section"

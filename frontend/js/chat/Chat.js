@@ -1,16 +1,19 @@
+import frame from '../../framework/framework.js';
 import WebSocketService from '../utils/Websocket.js';
 import { Message } from './Message.js';
 
 export default class Chat {
     constructor(nickname) {
         this.chat = document.getElementById('chat-container');
-        this.chatInput = document.getElementById('chat-input');
-        this.chatForm = document.getElementById('chat-form');
-        this.messagesDiv = document.getElementById('messages');
+        const elements = this.createChatElements(this.chat)
+        this.chatInput = elements.chatInput;
+        this.chatForm = elements.chatForm
+        this.messagesDiv = elements.messagesDiv
+
         this.webSocketService = new WebSocketService()
         this.webSocketService.connect()
 
-        this.chatForm.addEventListener('submit', (event) => {
+        this.chatForm.submit((event) => {
             event.preventDefault();
             this.sendMessage(nickname);
         });
@@ -51,5 +54,42 @@ export default class Chat {
         this.messagesDiv.appendChild(messageElement);
         this.messagesDiv.scrollTop = this.messagesDiv.scrollHeight;
         console.log(`Displaying message. Sender: ${sender}, Message: ${text}`);
+    }
+
+    createChatElements(container) {
+        const chatInput = frame.createInput({
+            type: 'text',
+            id: 'chat-input',
+            placeholder: 'Type your message...'
+        })
+
+        const chatForm = frame.createForm({
+            id: 'chat-form'
+        },
+            chatInput,
+            frame.createButton({
+                type: 'submit',
+                id: 'send-button',
+            }, "Send")
+        )
+
+        const messagesDiv = frame.createDiv({
+            id: 'messages'
+        })
+
+        container.append(
+            messagesDiv,
+            frame.createDiv({
+                id: 'chat-input-container'
+            },
+                chatForm,
+            )
+        )
+
+        return {
+            chatInput: chatInput,
+            chatForm: chatForm,
+            messagesDiv: messagesDiv,
+        }
     }
 }

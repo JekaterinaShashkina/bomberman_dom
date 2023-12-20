@@ -78,6 +78,11 @@ function createElement(type, attrs, children) {
         return element
     }
 
+    element.submit = (func) => {
+        createListener(element, 'submit', func)
+        return element
+    }
+
     return element;
 }
 
@@ -99,6 +104,10 @@ export function createInput(attrs, ...children) {
 
 export function createButton(attrs, ...children) {
     return createElement("button", attrs, children);
+}
+
+export function createForm(attrs, ...children) {
+    return createElement("form", attrs, children);
 }
 
 export function createSection(attrs, ...children) {
