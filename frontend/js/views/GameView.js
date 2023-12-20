@@ -2,7 +2,7 @@ import GameUI from "../core/GameUI.js"
 
 export default class GameView {
     constructor() {
-        this.game = document.getElementById("game")
+        this.game = document.getElementById("game-container")
         this.gameUI = null
     }
 

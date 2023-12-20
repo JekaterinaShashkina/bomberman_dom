@@ -13,14 +13,17 @@ import {
   boardSize,
 } from '../../const.js';
 
-const gameBoard = document.querySelector('.game-board');
+let gameBoard
 
 // Render the game board
 export const renderBoard = () => {
-  if (gameBoard.innerHTML === '') {
-    createBoard()
+  gameBoard = document.querySelector('.game-board');
+  if (gameBoard) {
+    if (gameBoard.innerHTML === '') {
+      createBoard()
+    }
+    updateBoard()
   }
-  updateBoard()
 };
 
 function updateBoard() {

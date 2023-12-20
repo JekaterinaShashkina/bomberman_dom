@@ -14,7 +14,8 @@ function createElement(type, attrs, children) {
         if (elem instanceof Element) {
             element.appendChild(elem);
         } else if (typeof elem === "string") {
-            element.innerHTML = elem;
+            const textNode = document.createTextNode(elem);
+            element.appendChild(textNode);
         } else {
             throw new Error("Invalid input type in element: " + element +
                 "\nInput should be string or element not " + typeof elem
@@ -43,6 +44,12 @@ function createElement(type, attrs, children) {
         return element
     }
 
+    addListenerFunctions(element)
+
+    return element;
+}
+
+export function addListenerFunctions(element) {
     element.click = (func) => {
         createListener(element, 'click', func)
         return element
@@ -50,6 +57,16 @@ function createElement(type, attrs, children) {
 
     element.keypress = (func) => {
         createListener(element, 'keypress', func)
+        return element
+    }
+
+    element.keydown = (func) => {
+        createListener(element, 'keydown', func)
+        return element
+    }
+
+    element.keyup = (func) => {
+        createListener(element, 'keyup', func)
         return element
     }
 
@@ -82,8 +99,6 @@ function createElement(type, attrs, children) {
         createListener(element, 'submit', func)
         return element
     }
-
-    return element;
 }
 
 export function createA(attrs, ...children) {
@@ -108,6 +123,10 @@ export function createButton(attrs, ...children) {
 
 export function createForm(attrs, ...children) {
     return createElement("form", attrs, children);
+}
+
+export function createAside(attrs, ...children) {
+    return createElement("aside", attrs, children);
 }
 
 export function createSection(attrs, ...children) {

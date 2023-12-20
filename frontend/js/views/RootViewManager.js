@@ -14,7 +14,6 @@ export default class RootViewManager {
     }
 
     showChat(nickname) {
-        console.log(nickname)
         this.chat = new Chat(nickname)
         this.chat.show()
     }

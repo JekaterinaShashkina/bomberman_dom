@@ -27,6 +27,8 @@ export function createListener(element, type, func) {
     element.onchange = (event) => { runFuncs("change", event) };
     element.oninput = (event) => { runFuncs("input", event) };
     element.onkeypress = (event) => { runFuncs("keypress", event) };
+    element.onkeydown = (event) => { runFuncs("keydown", event) };
+    element.onkeyup = (event) => { runFuncs("keyup", event) };
     element.ondblclick = (event) => { runFuncs("dblclick", event) };
     element.onsubmit = (event) => { runFuncs("submit", event) };
 }

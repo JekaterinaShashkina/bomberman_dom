@@ -1,40 +1,87 @@
+import frame from '../../framework/framework.js';
 import GameCore from './GameCore.js';
 
 export default class GameUI {
   constructor(gameSetup) {
-    // DOM Elements
-    this.livesCount = document.getElementById('lives-count');
-    this.bombCount = document.getElementById('bomb-count');
-    this.flameCount = document.getElementById('flame-count');
-    this.speedLevel = document.getElementById('speed-level');
+    this.game = document.getElementById("game-container")
+    const elements = this.createGameElements(this.game)
+    this.livesCount = elements.livesCount;
+    this.bombCount = elements.bombCount
+    this.flameCount = elements.flameCount
+    this.speedLevel = elements.speedLevel
 
     this.gameCore = new GameCore(this, gameSetup)
 
     // Handle keydown
-    window.addEventListener('keydown', (event) => {
+    window.keydown((event) => {
       const { key } = event;
       this.gameCore.handleKeyPress(key);
     });
 
     // Handle keyup
-    window.addEventListener('keyup', () => {
+    window.keyup(() => {
       this.gameCore.resetCurrentKey()
     });
   }
 
   updatedLives(count) {
+    console.log(this.livesCount)
     this.livesCount.innerText = count
+    console.log(this.livesCount)
   }
 
   updatedBombCount(count) {
+    console.log(this.bombCount)
     this.bombCount.innerText = count
+    console.log(this.bombCount)
   }
 
   updatedFlameCount(count) {
+    console.log(this.flameCount)
     this.flameCount.innerText = count
+    console.log(this.flameCount)
   }
 
   updatedSpeedLevel(count) {
     this.speedLevel.innerText = count
+  }
+
+  createGameElements(container) {
+    const livesCount = frame.createSpan({ id: 'lives-count' }, "3")
+    const bombCount = frame.createSpan({ id: 'bomb-count' }, "1")
+    const flameCount = frame.createSpan({ id: 'flame-count' }, "1")
+    const speedLevel = frame.createSpan({ id: 'speed-level' }, "1")
+
+    container.append(
+      frame.createDiv({ class: 'game-board' }),
+      frame.createAside({ id: 'game-info' },
+        frame.createDiv({ id: 'score' },
+          "Score: ",
+          frame.createSpan({ id: 'score-count' }, "0"),
+        ),
+        frame.createDiv({ id: 'lives' },
+          "Lives: ",
+          livesCount,
+        ),
+        frame.createDiv({
+          id: 'powerups'
+        },
+          "Bombs: ",
+          bombCount,
+          " Flames: ",
+          flameCount,
+          " Speed: ",
+          speedLevel,
+        ),
+        frame.createButton({ id: 'start-pause' }, "Start")
+      )
+    )
+
+    return {
+      livesCount: livesCount,
+      bombCount: bombCount,
+      flameCount: flameCount,
+      speedLevel: speedLevel,
+    }
   }
 }
