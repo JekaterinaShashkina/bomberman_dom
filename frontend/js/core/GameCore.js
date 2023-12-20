@@ -55,8 +55,8 @@ export default class GameCore {
   updateBoard = (startBoard) => {
     for (let i = 0; i < boardSize; i++) {
       for (let j = 0; j < boardSize; j++) {
-        if (startBoard[i][j] === EXPLOSION && board[i][j] == PLAYER
-          && this.playerPosition.x == j && this.playerPosition.y == i) {
+        if (startBoard[i][j] === EXPLOSION && this.playerPosition.x == j
+          && this.playerPosition.y == i) {
           // Check if current player is in explosion in new game update
           this.playerDies()
         }
