@@ -9,6 +9,7 @@ export default class GameUI {
     this.bombCount = elements.bombCount
     this.flameCount = elements.flameCount
     this.speedLevel = elements.speedLevel
+    this.player = gameSetup.player
 
     this.gameCore = new GameCore(this, gameSetup)
 
@@ -25,21 +26,15 @@ export default class GameUI {
   }
 
   updatedLives(count) {
-    console.log(this.livesCount)
     this.livesCount.innerText = count
-    console.log(this.livesCount)
   }
 
   updatedBombCount(count) {
-    console.log(this.bombCount)
     this.bombCount.innerText = count
-    console.log(this.bombCount)
   }
 
   updatedFlameCount(count) {
-    console.log(this.flameCount)
     this.flameCount.innerText = count
-    console.log(this.flameCount)
   }
 
   updatedSpeedLevel(count) {

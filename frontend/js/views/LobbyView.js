@@ -72,8 +72,8 @@ export default class LobbyView {
 
                 case 'joined-successfully':
                     this.joinButton.innerText = 'Joined! Waiting...';
-                    this.RootViewManager.showChat(this.nickname)
-                    this.gameSetup.startPosition = data.startPosition
+                    this.RootViewManager.showChat(data.player.nickname)
+                    this.gameSetup.player = data.player
                     break;
 
                 case 'join-error':

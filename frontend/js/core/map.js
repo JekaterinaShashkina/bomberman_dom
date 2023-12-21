@@ -18,6 +18,7 @@ let gameBoard
 // Render the game board
 export const renderBoard = () => {
   gameBoard = document.querySelector('.game-board');
+
   if (gameBoard) {
     if (gameBoard.innerHTML === '') {
       createBoard()

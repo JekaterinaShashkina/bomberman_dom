@@ -3,9 +3,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import http from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
-import { initializeBoard } from './js/map/map.js';
 import { PLAYER_POSITIONS } from '../frontend/const.js';
 import ServerGameCore from './js/core/ServerGameCore.js';
+import Player from './js/core/Player.js';
 
 const app = express();
 const PORT = 3000;
@@ -14,7 +14,6 @@ const __dirname = path.dirname(__filename)
 const pathToFrontend = '../frontend'
 const frontendDirPath = path.join(__dirname, pathToFrontend)
 
-let serverGameCore
 const MAX_PLAYERS = 1
 let countdown = 1;
 let playerCount = 0;
@@ -27,6 +26,7 @@ app.get('/', (req, res) => {
 
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
+const serverGameCore = new ServerGameCore(wss)
 
 wss.broadcast = (data, excludeClient) => {
   wss.clients.forEach((client) => {
@@ -54,12 +54,16 @@ wss.on('connection', (ws) => {
         if (playerCount < MAX_PLAYERS) {
           playerCount++;
           wss.broadcast({ type: 'update-player-count', count: playerCount });
+          const player = new Player(playerCount, PLAYER_POSITIONS[playerCount], clientData.nickname, wss)
+
           ws.send(
             JSON.stringify({
               type: 'joined-successfully',
-              startPosition: PLAYER_POSITIONS[playerCount]
+              player: player
             }),
           );
+
+          serverGameCore.addPlayer(playerCount, player)
 
           if (playerCount === MAX_PLAYERS) {
             const countdownInterval = setInterval(() => {
@@ -68,9 +72,7 @@ wss.on('connection', (ws) => {
 
               if (countdown <= 0) {
                 clearInterval(countdownInterval);
-                const map = initializeBoard(playerCount);
-                serverGameCore = new ServerGameCore(map, wss)
-                wss.broadcast({ type: 'game-start', map: map });
+                serverGameCore.startGame()
               }
             }, 1000);
           }

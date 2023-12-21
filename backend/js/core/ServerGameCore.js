@@ -1,5 +1,6 @@
 import {
     board,
+    boardSize,
     WALL,
     EMPTY,
     BOMB,
@@ -12,6 +13,8 @@ import {
     POWER_UP_FLAME,
     BOMB_EXPLOSION_DELAY,
 } from '../../../frontend/const.js'
+import { initializeBoard } from '../map/map.js';
+import Bomb from './Bomb.js';
 
 export default class ServerGameCore {
     directions = [
@@ -27,25 +30,29 @@ export default class ServerGameCore {
         POWER_UP_FLAME,
     ];
 
-    constructor(map, wss) {
-        this.setBoard(map)
+    players = {}
+
+    constructor(wss) {
         this.wss = wss
+    }
+
+    startGame() {
+        const map = initializeBoard(this.players);
+        this.setBoard(map)
+        this.wss.broadcast({ type: 'game-start', map: map });
     }
 
     handleMessage(clientData) {
         switch (clientData.type) {
             case 'player-move':
-                const coordinates = clientData.coordinates
-                this.movePlayer(
-                    coordinates.startX,
-                    coordinates.startY,
-                    coordinates.newX,
-                    coordinates.newY)
+                this.handlePlayerMovement(clientData.data)
                 break;
+
             case 'place-bomb':
-                const bomb = clientData.bomb
-                this.placeBomb(bomb)
+                // const bomb = clientData.bomb
+                this.placeBomb(clientData.data)
                 break;
+
             case 'player-dies':
                 const location = clientData.coordinates
                 this.playerDies(
@@ -64,18 +71,54 @@ export default class ServerGameCore {
         });
     }
 
-    movePlayer = (startX, startY, endX, endY) => {
-        // New position move avalaibility control
-        if (board[endY][endX] !== WALL && board[endY][endX] !== BREAKABLE_WALL
-            && board[endY][endX] !== BOMB && board[endY][endX] !== PLAYER) {
-            if (board[startY][startX] !== BOMB &&
-                board[startY][startX] !== EXPLOSION) {
-                board[startY][startX] = EMPTY;
-            }
+    addPlayer = (id, player) => {
+        this.players[id] = player
+    }
 
-            board[endY][endX] = PLAYER;
+    handlePlayerMovement = (data) => {
+        const player = this.players[data.playerId]
+        const direction = data.direction
+        const [startX, startY] = player.getPosition()
+        let newX = startX;
+        let newY = startY;
+
+        if (direction === 'ArrowUp' && startY > 1) {
+            newY -= 1;
+        } else if (direction === 'ArrowDown' && startY < boardSize - 1) {
+            newY += 1;
+        } else if (direction === 'ArrowLeft' && startX > 1) {
+            newX -= 1;
+        } else if (direction === 'ArrowRight' && startX < boardSize - 1) {
+            newX += 1;
+        }
+
+        if (board[newY][newX] === EXPLOSION) {
+            this.playerDies(player)
+        } else if (board[newY][newX] !== WALL && board[newY][newX] !== BREAKABLE_WALL
+            && board[newY][newX] !== BOMB && board[newY][newX] !== PLAYER) {
+            this.collectPowerUp(newX, newY, player)
+            this.movePlayer(player, newX, newY)
         }
     }
+
+    movePlayer = (player, endX, endY) => {
+        const [startX, startY] = player.getPosition()
+        player.playerPosition.x = endX
+        player.playerPosition.y = endY
+
+        if (board[startY][startX] !== BOMB && board[startY][startX] !== EXPLOSION) {
+            board[startY][startX] = EMPTY;
+        }
+
+        board[endY][endX] = PLAYER;
+        this.updateBoard()
+    }
+
+    collectPowerUp = (newX, newY, player) => {
+        if (this.powerUpsTypes.includes(board[newY][newX])) {
+            player.applyPowerUpEffect(board[newY][newX])
+        }
+    };
 
     playerDies = (currentX, currentY) => {
         if (board[currentY][currentX] === EXPLOSION) {
@@ -86,11 +129,22 @@ export default class ServerGameCore {
         this.updateBoard()
     }
 
-    placeBomb = (bomb) => {
-        board[bomb.y][bomb.x] = BOMB;
-        setTimeout(() => {
-            this.explodeBomb(bomb);
-        }, BOMB_EXPLOSION_DELAY);
+    placeBomb = (data) => {
+        const player = this.players[data.playerId]
+
+        if (
+            (player.bombsPlaced < player.currentMaxBombs)
+        ) {
+            const [x, y] = player.getPosition()
+            const bomb = new Bomb(x, y, player.explosionRadius)
+            board[y][x] = BOMB;
+
+            player.bombsPlaced++;
+            setTimeout(() => {
+                player.bombsPlaced--
+                this.explodeBomb(bomb);
+            }, BOMB_EXPLOSION_DELAY);
+        }
     }
 
     explodeBomb = (bomb) => {
@@ -106,6 +160,8 @@ export default class ServerGameCore {
                 if (board[targetY][targetX] === WALL) {
                     break;
                 }
+                const player = this.findPlayer(targetX, targetY)
+                if (player) this.playerDies(player)
                 if (board[targetY][targetX] === BREAKABLE_WALL) {
                     board[targetY][targetX] = EXPLOSION_BREAKABLE_WALL;
                 } else {
@@ -116,7 +172,6 @@ export default class ServerGameCore {
         // Send game update
         this.updateBoard()
 
-        // Call animateExplosion again until the end of animation time
         setTimeout(() => {
             for (const direction of this.directions) {
                 for (let i = 0; i <= radius; i++) {
@@ -126,7 +181,7 @@ export default class ServerGameCore {
                         break;
                     }
 
-                    if (board[targetY][targetX] === EXPLOSION_BREAKABLE_WALL && Math.random() < 0.3) {
+                    if (board[targetY][targetX] === EXPLOSION_BREAKABLE_WALL && Math.random() < 1) {
                         board[targetY][targetX] = this.getRandomPowerUpType();
                     } else {
                         board[targetY][targetX] = EMPTY
@@ -135,6 +190,30 @@ export default class ServerGameCore {
             }
             this.updateBoard()
         }, 1000); // Adjust the time as needed
+    };
+
+    findPlayer(x, y) {
+        for (const player of Object.values(this.players)) {
+            const [currentX, currentY] = player.getPosition()
+            if (currentX === x && currentY === y) {
+                return player
+            }
+        }
+        return null
+    }
+
+    playerDies = (player) => {
+        player.playerLosesLife()
+
+        if (player.playerLives <= 0) {
+            const [x, y] = player.getPosition()
+            if (board[y][x] === PLAYER) {
+                board[y][x] = EMPTY
+            }
+            console.log('player dead')
+        } else {
+            this.movePlayer(player, player.startPosition.x, player.startPosition.y)
+        }
     };
 
     getRandomPowerUpType = () => {

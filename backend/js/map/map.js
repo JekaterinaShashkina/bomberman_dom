@@ -4,12 +4,11 @@ import {
     BREAKABLE_WALL,
     PLAYER,
     boardSize,
-    PLAYER_POSITIONS,
 } from '../../../frontend/const.js';
 
 const board = [];
 
-export const initializeBoard = (playerCount) => {
+export const initializeBoard = (players) => {
     for (let i = 0; i < boardSize; i++) {
         const row = [];
         for (let j = 0; j < boardSize; j++) {
@@ -37,10 +36,9 @@ export const initializeBoard = (playerCount) => {
     }
 
     // Set player positions
-    for (const [key, value] of Object.entries(PLAYER_POSITIONS)) {
-        if (key <= playerCount) {
-            board[value.y][value.x] = PLAYER;
-        }
+    for (const player of Object.values(players)) {
+        const position = player.startPosition
+        board[position.y][position.x] = PLAYER;
     }
 
     return board;
