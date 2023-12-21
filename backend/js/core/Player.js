@@ -24,6 +24,7 @@ export default class Player {
         this.nickname = nickname
         this.wss = wss
 
+        this.delayPlayerDeath = false
         this.bombsPlaced = 0
         this.playerLives = PLAYER_LIVES;
         this.playerSpeed = DEFAULT_PLAYER_SPEED
@@ -69,7 +70,6 @@ export default class Player {
     };
 
     sendUpdateToPlayer = (type, payload) => {
-        console.log(payload)
         this.wss.broadcast({
             type: type,
             payload: payload,
@@ -79,6 +79,10 @@ export default class Player {
 
     playerLosesLife() {
         this.playerLives--
+        this.delayPlayerDeath = true
+        setTimeout(() => {
+            this.delayPlayerDeath = false
+        }, 1000)
         this.wss.broadcast({
             type: this.updateLives,
             payload: { count: this.playerLives },

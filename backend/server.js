@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename)
 const pathToFrontend = '../frontend'
 const frontendDirPath = path.join(__dirname, pathToFrontend)
 
-const MAX_PLAYERS = 1
+const MAX_PLAYERS = 2
 let countdown = 1;
 let playerCount = 0;
 

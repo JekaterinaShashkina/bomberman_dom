@@ -49,15 +49,7 @@ export default class ServerGameCore {
                 break;
 
             case 'place-bomb':
-                // const bomb = clientData.bomb
                 this.placeBomb(clientData.data)
-                break;
-
-            case 'player-dies':
-                const location = clientData.coordinates
-                this.playerDies(
-                    location.x,
-                    location.y)
                 break;
         }
 
@@ -120,21 +112,10 @@ export default class ServerGameCore {
         }
     };
 
-    playerDies = (currentX, currentY) => {
-        if (board[currentY][currentX] === EXPLOSION) {
-            board[currentY][currentX] = EXPLOSION;
-        } else {
-            board[currentY][currentX] = EMPTY;
-        }
-        this.updateBoard()
-    }
-
     placeBomb = (data) => {
         const player = this.players[data.playerId]
 
-        if (
-            (player.bombsPlaced < player.currentMaxBombs)
-        ) {
+        if (player.bombsPlaced < player.currentMaxBombs) {
             const [x, y] = player.getPosition()
             const bomb = new Bomb(x, y, player.explosionRadius)
             board[y][x] = BOMB;
@@ -183,6 +164,8 @@ export default class ServerGameCore {
 
                     if (board[targetY][targetX] === EXPLOSION_BREAKABLE_WALL && Math.random() < 1) {
                         board[targetY][targetX] = this.getRandomPowerUpType();
+                    } else if (this.findPlayer(targetX, targetY)?.playerLives > 0) {
+                        board[targetY][targetX] = PLAYER
                     } else {
                         board[targetY][targetX] = EMPTY
                     }
@@ -203,16 +186,17 @@ export default class ServerGameCore {
     }
 
     playerDies = (player) => {
-        player.playerLosesLife()
+        if (!player.delayPlayerDeath) {
+            player.playerLosesLife()
 
-        if (player.playerLives <= 0) {
-            const [x, y] = player.getPosition()
-            if (board[y][x] === PLAYER) {
-                board[y][x] = EMPTY
+            if (player.playerLives <= 0) {
+                const [x, y] = player.getPosition()
+                if (board[y][x] === PLAYER) {
+                    board[y][x] = EMPTY
+                }
+            } else {
+                this.movePlayer(player, player.startPosition.x, player.startPosition.y)
             }
-            console.log('player dead')
-        } else {
-            this.movePlayer(player, player.startPosition.x, player.startPosition.y)
         }
     };
 

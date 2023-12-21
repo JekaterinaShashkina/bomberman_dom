@@ -50,10 +50,7 @@ export default class GameUI {
     container.append(
       frame.createDiv({ class: 'game-board' }),
       frame.createAside({ id: 'game-info' },
-        frame.createDiv({ id: 'score' },
-          "Score: ",
-          frame.createSpan({ id: 'score-count' }, "0"),
-        ),
+        frame.createBr({}),
         frame.createDiv({ id: 'lives' },
           "Lives: ",
           livesCount,

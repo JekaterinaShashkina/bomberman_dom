@@ -23,13 +23,6 @@ export default class UpdateManager {
         });
     }
 
-    playerDies(coordinates) {
-        this.webSocketService.send({
-            type: 'player-dies',
-            coordinates: coordinates,
-        });
-    }
-
     handleWebSocketMessage(data) {
         switch (data.type) {
             case 'update-game':

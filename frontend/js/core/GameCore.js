@@ -11,8 +11,6 @@ export default class GameCore {
   constructor(gameUI, gameSetup) {
     this.gameUI = gameUI
     this.updateGameState = new UpdateManager(this, this.gameUI)
-    this.playerStartPosition = Object.assign({}, gameSetup.player.startPosition);
-    this.playerPosition = gameSetup.player.startPosition
     this.playerId = gameSetup.player.id
     this.setBoard(gameSetup.startBoard)
 
