@@ -65,7 +65,6 @@ export default class GameUI {
           " Speed: ",
           speedLevel,
         ),
-        frame.createButton({ id: 'start-pause' }, "Start")
       )
     )
 

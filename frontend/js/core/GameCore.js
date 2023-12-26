@@ -14,13 +14,14 @@ export default class GameCore {
     this.playerId = gameSetup.player.id
     this.setBoard(gameSetup.startBoard)
 
-    this.playerLives = PLAYER_LIVES;
-    this.playerSpeed = DEFAULT_PLAYER_SPEED;
+    this.playerLives = PLAYER_LIVES
+    this.playerSpeed = DEFAULT_PLAYER_SPEED
 
     this.currentKey
     this.blockMovement = false
+    this.renderBoardToggle = false
 
-    requestAnimationFrame(this.playerMovementLoop)
+    requestAnimationFrame(this.gameLoop)
   }
 
   setBoard = (startBoard) => {
@@ -34,7 +35,7 @@ export default class GameCore {
         board[i][j] = startBoard[i][j]
       }
     }
-    renderBoard()
+    this.renderBoardToggle = true
   }
 
   handleKeyPress = (key) => {
@@ -66,7 +67,7 @@ export default class GameCore {
     this.playerLives = lives
   }
 
-  playerMovementLoop = () => {
+  gameLoop = () => {
     if (!this.blockMovement && this.isValidKey(this.currentKey)) {
       // Handle player movement delay
       this.blockMovement = true
@@ -79,6 +80,11 @@ export default class GameCore {
       })
     }
 
-    requestAnimationFrame(this.playerMovementLoop)
+    if (this.renderBoardToggle) {
+      this.renderBoardToggle = false
+      renderBoard()
+    }
+
+    requestAnimationFrame(this.gameLoop)
   }
 }

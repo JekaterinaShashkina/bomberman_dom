@@ -17,7 +17,8 @@ export default class LobbyView {
         this.nicknameInput = elements.nicknameInput
         this.playerCounter = elements.playerCounter
         this.countdownElement = elements.countdownElement
-        this.elem =  elements.elem
+        this.elem = elements.elem
+        this.timer = elements.timer
 
         this.setJoinButtonListener()
         this.setWebsocketListener()
@@ -63,11 +64,12 @@ export default class LobbyView {
         this.webSocketService.addMessageHandler((data) => {
             switch (data.type) {
                 case 'update-player-count':
-                    this.playerCounter.innerHTML = data.count;
+                    this.playerCounter.innerHTML = data.count + "/4";
                     break;
 
                 case 'update-countdown':
                     this.countdownElement.innerText = `${data.time} seconds`;
+                    this.timer.style.display = "block"
                     break;
 
                 case 'joined-successfully':
@@ -124,6 +126,14 @@ export default class LobbyView {
             class: "wait__players"
         })
 
+        const timer = frame.createDiv({
+            id: "timer",
+            style: "display: none"
+        },
+            "Game starts in:",
+            countdownElement,
+        )
+
         container.append(
             frame.createH1({}, "Welcome to Bomberman-DOM"),
             frame.createSection({
@@ -143,12 +153,7 @@ export default class LobbyView {
                     elem,
                 ),
                 playerCounter,
-                frame.createDiv({
-                    id: "timer"
-                },
-                    "Game starts in:",
-                    countdownElement,
-                )
+                timer,
             )
         )
 
@@ -157,6 +162,8 @@ export default class LobbyView {
             nicknameInput: nicknameInput,
             playerCounter: playerCounter,
             countdownElement: countdownElement,
-            elem: elem}
+            elem: elem,
+            timer: timer,
+        }
     }
 }
