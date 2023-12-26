@@ -45,6 +45,6 @@ http://localhost:3000
 
 [Catharin](https://01.kood.tech/git/Catharin)
 
-[Andres Männiksaar](https://01.kood.tech/git/Jxie)\
+[Andres Männiksaar](https://01.kood.tech/git/Jxie)
 
-[AndriK](https://01.kood.tech/git/AndriK)\
+[AndriK](https://01.kood.tech/git/AndriK)
